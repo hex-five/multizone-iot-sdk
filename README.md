@@ -111,7 +111,7 @@ make load
 ```
 Note: With some older versions of the ftdi libraries, the first "make load" after powering the board may take a bit longer. If you don't want to wait, the simple workaround is to reset the FPGA board to abort the openOCD session. If you do this, make sure to kill the openocd process on your computer. Subsequent loads will work as expected and take approximately 10 seconds.
 
-### Connect to the MQTT Broker ###
+### Connect the device to the MQTT Broker ###
 
 Make sure switch SW3 is positioned close to the edge of the board.
 
@@ -182,6 +182,26 @@ Z2 > Commands: yield send recv pmp load store exec dma stats timer restart
 For a detailed explanation of the features of the MultiZone TEE see the [MultiZone TEE Reference Manual](https://github.com/hex-five/multizone-iot-sdk/blob/master/ext/multizone/manual.pdf)
 
 _Note:_ take note of your randomly generated client id as you'll need it to interact with the target via MQTT messages published and subscribed to topics mzone-xxxxxxxx/zonex (mzone-47194669 in this example). The MQTT client id is generated randomly for each new MQTT session upon board reset.
+
+### Send and receive MQTT messages ###
+```
+cd ~/multizone-iot-sdk
+
+```
+_Note:_ in all the following examples, replace "mzone-47194669" with your randomly generated client id.
+
+
+Subscribe (receive) to the device topic "zone1" - background process:
+```
+mosquitto_sub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone1 &
+```
+
+Publish (send) a "ping" message to zone #1:
+```
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone1 -m ping
+```
+
+The background process listening for messages coming from zone #1 should receive and display a "pong" reply.
 
 ### Deploy Remote Firmware Updates ###
 ```
