@@ -186,9 +186,8 @@ _Note:_ take note of your randomly generated client id as you'll need it to inte
 ### Send and receive MQTT messages ###
 ```
 cd ~/multizone-iot-sdk
-
 ```
-_Note:_ in all the following examples, replace "mzone-47194669" with your randomly generated client id.
+_Note:_ in all the following examples replace "mzone-47194669" with your randomly generated client id.
 
 
 Subscribe (receive) to the device topic "zone1" - background process:
@@ -200,13 +199,10 @@ Publish (send) a "ping" message to zone #1:
 ```
 mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone1 -m ping
 ```
-
 The background process listening for messages coming from zone #1 should receive and display a "pong" reply.
 
+
 ### Deploy Remote Firmware Updates ###
-```
-cd ~/multizone-iot-sdk
-```
 
 Deploy the rainbow LED appication to zone #3 (binary zone3.1/zone3.bin):
 ```
@@ -218,11 +214,10 @@ Delopy the robot application to zone #4 (binary zone4.1/zone4.bin):
 mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone4 -f zone4.1/zone4.bin
 ```
 
-Alternatively, delopy the FreeRTOS-based version of the robot application (binary zone4.2/zone4.bin):
+Optional: delopy the FreeRTOS-based version of the robot application (binary zone4.2/zone4.bin):
 ```
 mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone4 -f zone4.2/zone4.bin
 ```
-_Note:_ make sure to replace "mzone-47194669" with your randomly generated client id.  
 
 
 ### To Be Continued ... #
