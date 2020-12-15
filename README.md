@@ -88,8 +88,10 @@ cd multizone-iot-sdk
 git apply -p1 ext/lwip.patch --directory=ext/lwip
 git apply -p1 ext/freertos.patch --directory=ext/freertos
 ```
-***Important**: make sure you apply the lwIP patch above. Without the lwIP patch the firmware is NOT secure.
-***Important**: FreeRTOS is completely optional as the built-in MultiZone TEE provides equivalent functionality. If you intend to use FreeRTOS, make sure to apply the freertos patch above. Without the freertos patch the firmware is NOT secure.
+***Important***: make sure to apply the lwIP patch above. Without the lwIP patch the firmware is NOT secure!
+
+***Important***: FreeRTOS is optional as the MultiZone TEE provides its own RTOS. If you intend to use FreeRTOS, make sure to apply the freertos patch above. 
+
 
 ### Build & load the MultiZone IoT firmware ###
 
