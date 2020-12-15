@@ -29,13 +29,13 @@ For instructions on how to upload the bitstream to the ARTY board and how to con
 
 ### Installation ###
 
-The MultiZone SDK works with any versions of Linux, Windows, and Mac capable of running Java 1.8 or greater. The directions in this readme have been verified with fresh installations of Ubuntu 20.04, Ubuntu 19.10, Ubuntu 18.04.5, and Debian 10.5. Other Linux distros are similar. Windows developers may want to install a Linux emulation environment like Cygwin or run the SDK in a Linux VM guest (2GB Disk, 2GB Ram)
+The MultiZone SDK works with any versions of Linux, Windows, and Mac capable of running Java 1.8 or greater. The directions in this readme have been verified with fresh installations of Ubuntu 20.04, Ubuntu 19.10, Ubuntu 18.04.5, and Debian 10.5. Other Linux distros are similar. Windows developers may want to install a Linux emulation environment like Cygwin or run the SDK in a Linux VM guest (2GB Disk, 2GB Ram).
 
 **Linux prerequisites**
 
 ```
 sudo apt update
-sudo apt install gmake default-jre gtkterm libhidapi-dev libftdi1-2
+sudo apt install gmake default-jre libhidapi-dev libftdi1-2 gtkterm mosquitto-clients
 ```
 Ubuntu 18.04 LTS additional dependency
 
@@ -44,7 +44,9 @@ sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ focal main univer
 sudo apt update
 sudo apt install libncurses-dev
 ```
-Note: GtkTerm is optional and required only to connect to the reference application via a local terminal. It is not required to build, debug, and load the MultiZone firmware or to connect to the target via Ethernet. Any other serial terminal application of choice would do.
+_Note_: the package gtkterm is optional and required only to connect to the reference application via a local terminal. It is not required to build, debug, and load the MultiZone firmware or to connect to the target via Ethernet. Any other serial terminal application of choice would do.
+
+_Note_: the package mosquitto-clients is optional and required only to test MQTT funcionality including telemetry and remote firmware updates. It is not required to build, debug, and load the MultiZone firmware or to connect to the target via Ethernet. Any other MQTT client application of choice would do.
 
 **GNU RISC-V Toolchain**
 
@@ -161,8 +163,6 @@ Z1 > mqtt: connected
 Z2 >
 ```
 
-### Remote Firmware Updates ###
-
 Hit enter on an empty line to show the list of commands available:
 
 ```
@@ -180,6 +180,11 @@ Z2 > Commands: yield send recv pmp load store exec dma stats timer restart
 - **restart**: jump the execution of this zone to the base address of the first pmp range restarting the zone
 
 For a detailed explanation of the features of the MultiZone TEE see the [MultiZone TEE Reference Manual](https://github.com/hex-five/multizone-iot-sdk/blob/master/ext/multizone/manual.pdf)
+
+### Deploy Remote Firmware Updates ###
+
+
+
 
 ### To Be Continued ... #
 ...
