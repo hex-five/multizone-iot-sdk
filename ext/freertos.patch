@@ -1,0 +1,54 @@
+diff --git a/portable/GCC/RISC-V/chip_specific_extensions/RV32I_CLINT_no_extensions/freertos_risc_v_chip_specific_extensions.h b/portable/GCC/RISC-V/chip_specific_extensions/RV32I_CLINT_no_extensions/freertos_risc_v_chip_specific_extensions.h
+index 054ba7a..32e2174 100644
+--- a/portable/GCC/RISC-V/chip_specific_extensions/RV32I_CLINT_no_extensions/freertos_risc_v_chip_specific_extensions.h
++++ b/portable/GCC/RISC-V/chip_specific_extensions/RV32I_CLINT_no_extensions/freertos_risc_v_chip_specific_extensions.h
+@@ -57,6 +57,8 @@
+ #define portasmHAS_MTIME 1
+ #define portasmADDITIONAL_CONTEXT_SIZE 0 /* Must be even number on 32-bit cores. */
+ 
++#define portasmHANDLE_INTERRUPT trap_handler
++
+ .macro portasmSAVE_ADDITIONAL_REGISTERS
+ 	/* No additional registers to save, so this macro does nothing. */
+ 	.endm
+diff --git a/portable/GCC/RISC-V/portASM.S b/portable/GCC/RISC-V/portASM.S
+index 3aaa89b..501db48 100644
+--- a/portable/GCC/RISC-V/portASM.S
++++ b/portable/GCC/RISC-V/portASM.S
+@@ -186,9 +186,17 @@
+ 			li t4, -1
+ 			lw t2, 0(t1)				/* Load the low word of ullNextTime into t2. */
+ 			lw t3, 4(t1)				/* Load the high word of ullNextTime into t3. */
+-			sw t4, 0(t0)				/* Low word no smaller than old value to start with - will be overwritten below. */
+-			sw t3, 4(t0)				/* Store high word of ullNextTime into compare register.  No smaller than new value. */
+-			sw t2, 0(t0)				/* Store low word of ullNextTime into compare register. */
++
++			/* Optional: MultiZone fast system call MZONE_WRTIMECMP(a1,a2) */
++			mv a1, t2
++			mv a2, t3
++			li a0, 0x6
++			.word 0x00300073
++
++//			sw t4, 0(t0)				/* Low word no smaller than old value to start with - will be overwritten below. */
++//			sw t3, 4(t0)				/* Store high word of ullNextTime into compare register.  No smaller than new value. */
++//			sw t2, 0(t0)				/* Store low word of ullNextTime into compare register. */
++
+ 			lw t0, uxTimerIncrementsForOneTick	/* Load the value of ullTimerIncrementForOneTick into t0 (could this be optimized by storing in an array next to pullNextTime?). */
+ 			add t4, t0, t2				/* Add the low word of ullNextTime to the timer increments for one tick (assumes timer increment for one tick fits in 32-bits). */
+ 			sltu t5, t4, t2				/* See if the sum of low words overflowed (what about the zero case?). */
+diff --git a/portable/GCC/RISC-V/portmacro.h b/portable/GCC/RISC-V/portmacro.h
+index a8eff23..52a5a4f 100644
+--- a/portable/GCC/RISC-V/portmacro.h
++++ b/portable/GCC/RISC-V/portmacro.h
+@@ -91,7 +91,10 @@
+ 
+ /* Scheduler utilities. */
+ extern void vTaskSwitchContext( void );
+-#define portYIELD() __asm volatile( "ecall" );
++
++#include "multizone.h"
++#define portYIELD()  MZONE_YIELD(); __asm volatile( "ecall" ); /* Hex Five Patch */
++
+ #define portEND_SWITCHING_ISR( xSwitchRequired ) if( xSwitchRequired ) vTaskSwitchContext()
+ #define portYIELD_FROM_ISR( x ) portEND_SWITCHING_ISR( x )
+ /*-----------------------------------------------------------*/

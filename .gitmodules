@@ -1,0 +1,9 @@
+[submodule "ext/lwip"]
+	path = ext/lwip
+	url = https://git.savannah.nongnu.org/git/lwip.git
+[submodule "ext/mbedtls"]
+	path = ext/mbedtls
+	url = https://github.com/ARMmbed/mbedtls.git
+[submodule "ext/FreeRTOS-Kernel"]
+	path = ext/freertos
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel

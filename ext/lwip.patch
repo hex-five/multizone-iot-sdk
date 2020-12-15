@@ -1,0 +1,79 @@
+diff --git a/src/apps/altcp_tls/altcp_tls_mbedtls.c b/src/apps/altcp_tls/altcp_tls_mbedtls.c
+index 45f215e..3865ee0 100644
+--- a/src/apps/altcp_tls/altcp_tls_mbedtls.c
++++ b/src/apps/altcp_tls/altcp_tls_mbedtls.c
+@@ -826,11 +826,20 @@
+   }
+   mbedtls_ssl_conf_authmode(&conf->conf, ALTCP_MBEDTLS_AUTHMODE);
+ 
++#if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH) && (MBEDTLS_SSL_MAX_CONTENT_LEN == 2048)
++  mbedtls_ssl_conf_max_frag_len(&conf->conf, MBEDTLS_SSL_MAX_FRAG_LEN_2048); /* Hex Five Patch */
++#endif
++
+   mbedtls_ssl_conf_rng(&conf->conf, mbedtls_ctr_drbg_random, &altcp_tls_entropy_rng->ctr_drbg);
+ #if ALTCP_MBEDTLS_LIB_DEBUG != LWIP_DBG_OFF
+   mbedtls_ssl_conf_dbg(&conf->conf, altcp_mbedtls_debug, stdout);
+ #endif
+-#if defined(MBEDTLS_SSL_CACHE_C) && ALTCP_MBEDTLS_USE_SESSION_CACHE
++
++#ifdef MBEDTLS_DEBUG_C
++  mbedtls_debug_set_threshold(4+1); /* Hex Five Patch */
++#endif
++
++  #if defined(MBEDTLS_SSL_CACHE_C) && ALTCP_MBEDTLS_USE_SESSION_CACHE
+   mbedtls_ssl_conf_session_cache(&conf->conf, &conf->cache, mbedtls_ssl_cache_get, mbedtls_ssl_cache_set);
+   mbedtls_ssl_cache_set_timeout(&conf->cache, ALTCP_MBEDTLS_SESSION_CACHE_TIMEOUT_SECONDS);
+   mbedtls_ssl_cache_set_max_entries(&conf->cache, ALTCP_MBEDTLS_SESSION_CACHE_SIZE);
+@@ -889,7 +898,7 @@
+   mbedtls_pk_init(pkey);
+ 
+   /* Load the certificates and private key */
+-  ret = mbedtls_x509_crt_parse(srvcert, cert, cert_len);
++  ret = mbedtls_x509_crt_parse_der_nocopy(srvcert, cert, cert_len); /* Hex Five Patch */
+   if (ret != 0) {
+     LWIP_DEBUGF(ALTCP_MBEDTLS_DEBUG, ("mbedtls_x509_crt_parse failed: %d\n", ret));
+     return ERR_VAL;
+@@ -952,7 +961,8 @@
+    * Without CA certificate, connection will be prone to man-in-the-middle attacks */
+   if (ca) {
+     mbedtls_x509_crt_init(conf->ca);
+-    ret = mbedtls_x509_crt_parse(conf->ca, ca, ca_len);
++    ret = mbedtls_x509_crt_parse_der_nocopy(conf->ca, ca, ca_len); /* Hex Five Patch */
++
+     if (ret != 0) {
+       LWIP_DEBUGF(ALTCP_MBEDTLS_DEBUG, ("mbedtls_x509_crt_parse ca failed: %d 0x%x", ret, -1*ret));
+       altcp_tls_free_config(conf);
+@@ -990,7 +1000,7 @@
+ 
+   /* Initialize the client certificate and corresponding private key */
+   mbedtls_x509_crt_init(conf->cert);
+-  ret = mbedtls_x509_crt_parse(conf->cert, cert, cert_len);
++  ret = mbedtls_x509_crt_parse_der_nocopy(conf->cert, cert, cert_len); /* Hex Five Patch */
+   if (ret != 0) {
+     LWIP_DEBUGF(ALTCP_MBEDTLS_DEBUG, ("mbedtls_x509_crt_parse cert failed: %d 0x%x", ret, -1*ret));
+     altcp_tls_free_config(conf);
+@@ -1101,6 +1111,11 @@
+     return ERR_VAL;
+   }
+   conn->connected = connected;
++
++#ifdef MQTT_BROKER_FQN
++  mbedtls_ssl_set_hostname(altcp_tls_context(conn), MQTT_BROKER_FQN); /* Hex Five Patch */
++#endif
++
+   return altcp_connect(conn->inner_conn, ipaddr, port, altcp_mbedtls_lower_connected);
+ }
+ 
+diff --git a/src/include/lwip/arch.h b/src/include/lwip/arch.h
+index 596c1c9..3a9fb12 100644
+--- a/src/include/lwip/arch.h
++++ b/src/include/lwip/arch.h
+@@ -45,7 +45,7 @@
+ #define BIG_ENDIAN 4321
+ #endif
+ 
+-#include "arch/cc.h"
++#include "lwiparchcc.h" /* Hex Five Patch */
+ 
+ /**
+  * @defgroup compiler_abstraction Compiler/platform abstraction

@@ -1,0 +1,22 @@
+mosquitto_sub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/+
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone1 -m ping
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone3 -f zone3.1/zone3.bin
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone3 -m ping
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -f zone4.1/zone4.bin
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m unfold
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m start
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m stop
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m t
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m g
+
+mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m fold
+
