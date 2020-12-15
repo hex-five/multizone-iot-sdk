@@ -11,7 +11,7 @@ Complete IoT firmware optimized for RISC-V:
 - Built-in Trusted Execution Environment RTOS providing up to 4 separated HW/SW “worlds”
 - Commercial open source license: no GPL contamination, no royalties, priced per design
 
-The MultiZone® IoT Firmware works with any 32-bit and 64-bit RISC-V processor with standard U-mode extension. For a quick start, we recommend the development kit based on the open source softcore X300 developed by Hex Five Security. It is an enhanced version of the E300 SoC (Rocket rv32) originally developed at U.C. Berkeley. Like the E300, the X300 is designed to be programmed onto a Xilinx Artix-7 35T. The X300 bitstream is entirely free for commercial and non-commercial use.
+The MultiZone® IoT Firmware works with any 32-bit and 64-bit RISC-V processor with standard U-mode extension. For a quick start, we recommend the development kit based on the open source softcore X300 developed by Hex Five Security. It is an enhanced version of the E300 SoC (Rocket rv32) originally developed at U.C. Berkeley. Like the E300, the X300 is designed to be programmed onto a Xilinx Artix-7. The X300 bitstream is entirely free for commercial and non-commercial use.
 
 This version of the MultiZone Secure IoT Firmware supports the following hardware development kits:
 
@@ -88,9 +88,9 @@ cd multizone-iot-sdk
 git apply -p1 ext/lwip.patch --directory=ext/lwip
 git apply -p1 ext/freertos.patch --directory=ext/freertos
 ```
-***Important***: make sure to apply the lwIP patch above. Without the lwIP patch the firmware is NOT secure!
+**_Important_**: make sure to apply the lwIP patch above. Without the lwIP patch the firmware is NOT secure!
 
-***Important***: FreeRTOS is optional as the MultiZone TEE provides its own RTOS. If you intend to use FreeRTOS, make sure to apply the freertos patch above. 
+**_Important_**: FreeRTOS is optional as the MultiZone TEE provides its own RTOS. If you intend to use FreeRTOS, make sure to apply the freertos patch above. 
 
 
 ### Build & load the MultiZone IoT firmware ###
@@ -112,11 +112,10 @@ Note: With some older versions of the ftdi libraries, the first "make load" afte
 ### Connect to the MQTT Broker ###
 
 Make sure switch SW3 is positioned close to the edge of the board.
-Open jumper JP2 (CK RST) to prevent system reset upon UART connection.
 
 Make sure the board is properly powered. An external power adapter 7-15V connected to J13 is recomended. USB hubs and weak computer USB ports will interfere with Ethernet operations and result in unexpected random behavior.     
 
-Disconnect the JTAG connector if OpenOCD is not in use otherwise the processor is permanently halted and the system won't boot.
+Disconnect the JTAG connector if OpenOCD is not in use otherwise the CPU is permanently halted and the system won't boot.
 
 Connect the UART port (ARTY micro USB J10) as indicated in the user manual. On your computer, start a serial terminal console (gtkterm) and connect to /dev/ttyUSB1 at 115200-8-N-1.
 
@@ -124,7 +123,7 @@ Connect the Ethernet port to an Internet router or to your computer if Internet 
 
 Press the reset button
 
-After 5 to 10 seconds the client should connect to the Hex Five's public MQTT broker
+After a few seconds the client should connect to Hex Five's public MQTT broker
 
 ```
 =====================================================================
@@ -146,89 +145,44 @@ CPU clock     : 64 MHz
 RTC clock     : 16 KHz 
 
 Z1 > netif_link_callback: up
-
-Z1 > netif_status_callback: address 192.168.0.141
-
+ 
+Z1 > netif_status_callback: address 192.168.0.130
+ 
 Z1 > dns_callback: mqtt-broker.hex-five.com 54.176.2.35
-
-Z1 > sntp_process: 1597618503 Sun Aug 16 22:55:03 2020
-
-Z1 > client_id: mzone-3c77b58a 
-
+ 
+Z1 > sntp_process: 1608056327 Tue Dec 15 18:18:47 2020
+ 
+Z1 > client_id: mzone-47194669 
+ 
 Z1 > mqtt: connecting ... 
-
+ 
 Z1 > mqtt: connected 
-
-Z2 > 
+ 
+Z2 >
 ```
 
 ### Remote Firmware Updates ###
 
-
-### Enable LwIP Debug output ###
-
-**1. lwipopts.h**
+Hit enter on an empty line to show the list of commands available:
 
 ```
-LWIP_DEBUG
-ALTCP_MBEDTLS_DEBUG
-ALTCP_MBEDTLS_LIB_DEBUG
-
-/* [OPTIONAL - Second stage debugging] */
-
-#define MEMP_OVERFLOW_CHECK 1
-#define MEMP_SANITY_CHECK   1
-#define MEM_OVERFLOW_CHECK  1
-#define MEM_SANITY_CHECK 1
-[Comment out] // #define LWIP_NOASSERT 1 // saves ~18K FLASH
+Z2 > Commands: yield send recv pmp load store exec dma stats timer restart
 ```
 
-**2. mbedtls_config.h**
+- **yield**: yield the CPU to the next zone showing the time taken to loop through all zones
+- **send/recv**: exchange messages with any zones. Zone 1 is the gateway to the MQTT broker: messages sent to zone 1 are forwarded to the broker topic device-id/zone. Messages sent to the broker topic device-id/zone are forwarded to the respective zone
+- **pmp**: show the separation policies for zone 2, which is the zone operating the local terminal
+- **load/store**: read and write data from/to any arbitrary physical memory location
+- **exec**: jump the execution of the zone to any arbitrary memory location
+- **dma**: submit a protected DMA transfer request
+- **stats**: repeat the yield command multiple times and print detailed kernel statistics
+- **timer**: set the zone timer to current time plus a time delay expressed in milliseconds
+- **restart**: jump the execution of this zone to the base address of the first pmp range restarting the zone
 
-```
-#define MBEDTLS_DEBUG_C
-#define MBEDTLS_SSL_DEBUG_ALL
-```
+For a detailed explanation of the features of the MultiZone TEE see the [MultiZone TEE Reference Manual](https://github.com/hex-five/multizone-iot-sdk/blob/master/ext/multizone/manual.pdf)
 
-**3. cc.h**
-
-Redefine LWIP_PLATFORM_DIAG output
-
-```
-#define printf2(format, args...) { 
-/* Multi-part printf() - non blocking / nocopy */ 
-...						
-}
-
-#define LWIP_PLATFORM_DIAG(x) do {printf2 x;} while(0)
-```
-
-
-### Technical Specs (TBD) ###
-| |
-|---|
-| Up to 8 hardware threads (zones) hardware-enforced, software-defined |
-| Up to 8 memory mapped resources per zone – i.e. flash, ram, rom, i/o, etc. |
-| Scheduler: preemptive, cooperative, round robin, configurable tick |
-| Secure interzone communications based on messages – no shared memory |
-| Built-in trap & emulation for privileged instructions – CSRR, CSRW, WFI, etc. |
-| Support for secure user-mode interrupt handlers mapped to zones – up to 32 sources PLIC / CLIC|
-| Support for Wait For Interrupt and CPU suspend mode for low power applications |
-| Formally verifiable runtime ~2KB, 100% written in assembly, no 3rd-party dependencies |
-| C library wrapper for protected mode execution – optional for high speed / low-latency |
-| Hardware requirements: RV32, RV32e, RV64 processor with Memory Protection Unit | 
-| System requirements: 4KB FLASH, 2KB RAM - CPU overhead < 0.01% | 
-| Development environment: any versions of Linux, Windows, Mac running Java 1.8 |
-
-
-### Additional Resources (TBD) ###
-
-- [MultiZone Reference Manual](http://github.com/hex-five/multizone-sdk/blob/master/manual.pdf)
-- [MultiZone Datasheet](https://hex-five.com/wp-content/uploads/2020/01/multizone-datasheet-20200109.pdf)
-- [MultiZone Website](https://hex-five.com/multizone-security-sdk/)
-- [Frequently Asked Questions](http://hex-five.com/faq/)
-- [Contact Hex Five http://hex-five.com/contact](http://hex-five.com/contact)
-
+### To Be Continued ... #
+...
 
 ### Legalities ###
 
