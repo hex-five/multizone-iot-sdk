@@ -1,18 +1,28 @@
 # multizone-iot-sdk
 
-The first secure IoT firmware for RISC-V processors. TBD ... high level functional description  
+The MultiZone® IoT Firmware is the quick and safe way to build secure IoT applications with any RISC-V processor. It provides secure access to commercial and private IoT clouds, real-time monitoring, secure boot, and remote firmware updates. The built-in Trusted Execution Environment provides hardware-enforced separation to shields the execution of trusted applications from untrusted 3rd party libraries.
 
+Complete IoT firmware optimized for RISC-V:
 
-This version of the MultiZone Secure IoT Firmware supports the following hardware:
+- Complete IoT stack that shields trusted applications from untrusted 3rd party libraries
+- Provides secure access to any IoT clouds, secure boot, remote firmware updates, etc.
+- Works with any RISC-V processor: no need for proprietary TrustZone-like HW
+- Rapid development: pre-integrated TEE, TCP/IP, TLS/ECC, FreeRTOS, GCC, Eclipse
+- Built-in Trusted Execution Environment RTOS providing up to 4 separated HW/SW “worlds”
+- Commercial open source license: no GPL contamination, no royalties, priced per design
+
+The MultiZone® IoT Firmware works with any 32-bit and 64-bit RISC-V processor with standard U-mode extension. For a quick start, we recommend the development kit based on the open source softcore X300 developed by Hex Five Security. It is an enhanced version of the E300 SoC (Rocket rv32) originally developed at U.C. Berkeley. Like the E300, the X300 is designed to be programmed onto a Xilinx Artix-7 35T. The X300 bitstream is entirely free for commercial and non-commercial use.
+
+This version of the MultiZone Secure IoT Firmware supports the following hardware development kits:
 
 - [Xilinx Artix-7 Arty FPGA Evaluation Kit](https://www.xilinx.com/products/boards-and-kits/arty.html)
 
-- [Microchip PolarFire SoC FPGA Icicle Kit](https://www.microsemi.com/existing-parts/parts/152514)
+- [Microchip PolarFire SoC FPGA Icicle Kit](https://www.microsemi.com/existing-parts/parts/152514) (Coming soon ...)
 
 
-The Arty FPGA Evaluation Kit requires with the following open source softcore:
+The Arty FPGA Evaluation Kit requires the following open source softcore:
 
-- [Hex Five X300 RV32ACIMU - Permissive open source free for any use.](https://github.com/hex-five/multizone-fpga)
+- [Hex Five X300 RV32ACIMU - Permissive license, free for any use.](https://github.com/hex-five/multizone-fpga)
 
 For instructions on how to upload the bitstream to the ARTY board and how to connect the [Olimex debug head ARM-USB-TINY-H](https://www.olimex.com/Products/ARM/JTAG/ARM-USB-TINY-H/) see [Arty FPGA Dev Kit Getting Started Guide](https://sifive.cdn.prismic.io/sifive%2Fed96de35-065f-474c-a432-9f6a364af9c8_sifive-e310-arty-gettingstarted-v1.0.6.pdf)
 
@@ -76,8 +86,10 @@ cd ~
 git clone --recursive git@github.com:hex-five/multizone-iot-sdk.git
 cd multizone-iot-sdk
 git apply -p1 ext/lwip.patch --directory=ext/lwip
+git apply -p1 ext/freertos.patch --directory=ext/freertos
 ```
-***Important**: make sure you apply the LWIP patch as indicated above. If you omit this step, the system will stil build and boot but security and functionality will be compromised.*     
+***Important**: make sure you apply the lwIP patch above. Without the lwIP patch the firmware is NOT secure.
+***Important**: FreeRTOS is completely optional as the built-in MultiZone TEE provides equivalent functionality. If you intend to use FreeRTOS, make sure to apply the freertos patch above. Without the freertos patch the firmware is NOT secure.
 
 ### Build & load the MultiZone IoT firmware ###
 
