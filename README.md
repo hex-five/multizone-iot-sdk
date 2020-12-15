@@ -121,11 +121,11 @@ Disconnect the JTAG connector if OpenOCD is not in use otherwise the CPU is perm
 
 Connect the UART port (ARTY micro USB J10) as indicated in the user manual. On your computer, start a serial terminal console (gtkterm) and connect to /dev/ttyUSB1 at 115200-8-N-1.
 
-Connect the Ethernet port to an Internet router or to your computer if Internet sharing is enabled - see https://help.ubuntu.com/community/Internet/ConnectionSharing. The router should provide DHCP configuration including one DNS servers. There is no need to open inbound ports for the MQTT client to work. If your local network blocks outbound connections to the default MQTT/TLS port 8883, you can reconfigure the client to use the HTTPS/TLS port 443, which is likely not blocked.
+Connect the Ethernet port to an Internet router or to your computer if Internet sharing is enabled - see https://help.ubuntu.com/community/Internet/ConnectionSharing. The router should provide DHCP configuration including one DNS servers. There is no need to open inbound ports for the MQTT client to work. If your local network blocks outbound connections to the default MQTT/TLS port 8883, you can reconfigure the client to use the HTTPS/TLS port 443, which is usually open - see MQTT configuration file [mqtt_config.h](https://github.com/hex-five/multizone-iot-sdk/blob/master/zone1/mqtt_config.h) 
 
-Press the reset button
+Press the reset button on the board and hit the enter key a few times on your serial terminal to synchronize the UART port.  
 
-After a few seconds the client should connect to Hex Five's public MQTT broker
+After a few seconds the client should connect to Hex Five's public MQTT broker:
 
 ```
 =====================================================================
