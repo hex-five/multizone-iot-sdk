@@ -1,6 +1,6 @@
 # multizone-iot-sdk
 
-The MultiZone® IoT Firmware is the quick and safe way to build secure IoT applications with any RISC-V processor. It provides secure access to commercial and private IoT clouds, real-time monitoring, secure boot, and remote firmware updates. The built-in Trusted Execution Environment provides hardware-enforced separation to shields the execution of trusted applications from untrusted 3rd party libraries.
+The MultiZone® IoT Firmware is the quick and safe way to build secure IoT applications with any RISC-V processor. It provides secure access to commercial and private IoT clouds, real-time monitoring, secure boot, and remote firmware updates. The built-in Trusted Execution Environment provides hardware-enforced separation to shield the execution of trusted applications from untrusted 3rd party libraries.
 
 Complete IoT firmware optimized for RISC-V:
 
