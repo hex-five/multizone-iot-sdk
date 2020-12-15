@@ -188,21 +188,22 @@ _Note:_ take note of your randomly generated client id as you'll need it to inte
 cd ~/multizone-iot-sdk
 ```
 
-Deploy the blinky appication to zone #3 (binary zone3.1/zone3.bin):
+Deploy the rainbow LED appication to zone #3 (binary zone3.1/zone3.bin):
 ```
 mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone3 -f zone3.1/zone3.bin
 ```
 
-Delopy the robot controller to zone #4 (binary zone4.1/zone4.bin):
+Delopy the robot application to zone #4 (binary zone4.1/zone4.bin):
 ```
 mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone4 -f zone4.1/zone4.bin
 ```
 
-Alternatively, delopy the FreeRTOS-based version the robot controller (binary zone4.2/zone4.bin):
+Alternatively, delopy the FreeRTOS-based version of the robot application (binary zone4.2/zone4.bin):
 ```
 mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone4 -f zone4.2/zone4.bin
 ```
 _Note:_ make sure to replace "mzone-47194669" with your randomly generated client id.  
+
 
 ### To Be Continued ... #
 ...
