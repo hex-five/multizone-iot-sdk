@@ -187,18 +187,22 @@ _Note:_ take note of your randomly generated client id as you'll need it to inte
 ### Send and receive MQTT messages ###
 ```
 cd ~/multizone-iot-sdk
+export MQTT=" --host mqtt-broker.hex-five.com"
+export MQTT=$MQTT" --cafile pki/hexfive-ca.crt"
+export MQTT=$MQTT" --cert pki/test.crt"
+export MQTT=$MQTT" --key pki/test.key"
 ```
-_Note:_ in all the following examples replace "mzone-47194669" with your randomly generated client id.
+_Note:_ in the following examples replace "mzone-47194669" with your randomly generated client id.
 
 
 Subscribe (listen) to all topics for your device - background process:
 ```
-mosquitto_sub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/# -v &
+mosquitto_sub $MQTT -t mzone-47194669/# -v &
 ```
 
 Publish (send) a "ping" message to zone #1:
 ```
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone1 -m ping
+mosquitto_pub -$MQTT -t mzone-47194669/zone1 -m ping
 ```
 Observe the "pong" reply received in the background.
 
@@ -207,17 +211,17 @@ Observe the "pong" reply received in the background.
 
 Deploy the rainbow LED appication to zone #3 (binary zone3.1/zone3.bin):
 ```
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone3 -f zone3.1/zone3.bin
+mosquitto_pub $MQTT -t mzone-47194669/zone3 -f zone3.1/zone3.bin
 ```
 
 Delopy the robot application to zone #4 (binary zone4.1/zone4.bin):
 ```
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone4 -f zone4.1/zone4.bin
+mosquitto_pub $MQTT -t mzone-47194669/zone4 -f zone4.1/zone4.bin
 ```
 
 Optional: delopy the FreeRTOS-based version of the robot application (binary zone4.2/zone4.bin):
 ```
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone4 -f zone4.2/zone4.bin
+mosquitto_pub $MQTT -t mzone-47194669/zone4 -f zone4.2/zone4.bin
 ```
 
 _Note:_ For a complete explanation of the functionality of each zone/application see the [MultiZone SDK Reference Manual](https://github.com/hex-five/multizone-iot-sdk/blob/master/ext/multizone/manual.pdf).
