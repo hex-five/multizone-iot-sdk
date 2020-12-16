@@ -110,6 +110,7 @@ make load
 ```
 Note: With some older versions of the ftdi libraries, the first "make load" after powering the board may take a bit longer. If you don't want to wait, the simple workaround is to reset the FPGA board to abort the openOCD session. If you do this, make sure to kill the openocd process on your computer. Subsequent loads will work as expected and take approximately 10 seconds.
 
+
 ### Connect the device to the MQTT Broker ###
 
 Make sure switch SW3 is positioned close to the edge of the board.
@@ -182,6 +183,7 @@ For a detailed explanation of the features of the MultiZone TEE see the [MultiZo
 
 _Note:_ take note of your randomly generated client id as you'll need it to interact with the target via MQTT messages published and subscribed to topics mzone-xxxxxxxx/zonex (mzone-47194669 in this example). The MQTT client id is generated randomly for each new MQTT session upon board reset.
 
+
 ### Send and receive MQTT messages ###
 ```
 cd ~/multizone-iot-sdk
@@ -191,7 +193,7 @@ _Note:_ in all the following examples replace "mzone-47194669" with your randoml
 
 Subscribe (listen) to all topics for your device - background process:
 ```
-mosquitto_sub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669 -v &
+mosquitto_sub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/# -v &
 ```
 
 Publish (send) a "ping" message to zone #1:
@@ -217,6 +219,201 @@ Optional: delopy the FreeRTOS-based version of the robot application (binary zon
 ```
 mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone4 -f zone4.2/zone4.bin
 ```
+
+_Note:_ For a complete explanation of the functionality of each zone/application see the [MultiZone SDK Reference Manual](https://github.com/hex-five/multizone-iot-sdk/blob/master/ext/multizone/manual.pdf).
+
+
+### Technical Specs ###
+
+<table border=0 cellspacing=0 cellpadding=0 width=1122 style='width:841.25pt;border-collapse:collapse'>
+ 
+<tr style='height:33.55pt'>
+  <td width=246 valign=top style='width:184.25pt;border:solid #FFC000 1.0pt;
+  border-right:none;background:#FFC000;padding:.05in .1in .05in .1in;
+  height:33.55pt'>
+  <p><b>Stack Component</b></p>
+  </td>
+  <td width=528 valign=top style='width:5.5in;border-top:solid #FFC000 1.0pt;
+  border-left:none;border-bottom:solid #FFC000 1.0pt;border-right:none;
+  background:#FFC000;padding:.05in .1in .05in .1in;height:33.55pt'>
+  <p><b><span style='color:black'>Features</span></b></p>
+  </td>
+  <td width=96 valign=top style='width:71.75pt;border-top:solid #FFC000 1.0pt;
+  border-left:none;border-bottom:solid #FFC000 1.0pt;border-right:none;
+  background:#FFC000;padding:.05in .1in .05in .1in;height:33.55pt'>
+  <p><b><span style='color:black'>Size</span></b></p>
+  </td>
+  <td width=252 valign=top style='width:189.25pt;border:solid #FFC000 1.0pt;
+  border-left:none;background:#FFC000;padding:.05in .1in .05in .1in;height:
+  33.55pt'>
+  <p><b><span style='color:black'>License</span></b></p>
+  </td>
+ </tr>
+
+ <tr style='height:47.65pt'>
+  <td width=246 valign=top style='width:184.25pt;border-top:none;border-left:
+  solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
+  padding:.05in .1in .05in .1in;height:47.65pt'>
+  <p><b>Reference Hardware</b></p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>Digilent ARTY7 35T FPGA</p>
+  <p style='text-indent:-.25in'>Hex Five X300 SoC IP</p>
+  </td>
+  <td width=528 valign=top style='width:5.5in;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:47.65pt'>
+  <p class=MsoListParagraphCxSpMiddle>&nbsp;</p>
+  <p style='text-indent:-.25in'>RISC-V core RV32ACIMU 4-way i-cahe 65MHz</p>
+  <p style='text-indent:-.25in'>Ethernet: Xilinx EthernetLite Ethernet core</p>
+  </td>
+  <td width=96 valign=top style='width:71.75pt;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:47.65pt'></td>
+  <td width=252 valign=top style='width:189.25pt;border-top:none;border-left:
+  none;border-bottom:solid #FFC000 1.0pt;border-right:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:47.65pt'>
+  <p><span lang=EN-GB>Apache 2.0 license</span></p>
+  <p><span lang=EN-GB>permissive </span></p>
+  <p>commercial use ok</p>
+  </td>
+ </tr>
+ <tr style='height:44.0pt'>
+  <td width=246 valign=top style='width:184.25pt;border-top:none;border-left:
+  solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
+  padding:.05in .1in .05in .1in;height:44.0pt'>
+  <p><b>IDE &amp; Toolchain</b></p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>Eclipse IDE + openOCD debug</p>
+  <p style='text-indent:-.25in'>GNU GCC, GDB, …</p>
+  </td>
+  <td width=528 valign=top style='width:5.5in;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:44.0pt'>
+  <p style='text-indent:-.25in'>GCC multi-lib rv32, rv32e, rv64, GDB, openOCD</p>
+  <p style='text-indent:-.25in'>Hex Five pre-built GCC binaries (optional)</p>
+  <p style='text-indent:-.25in'>Hex Five pre-built OpenOCD binaries (optional)</p>
+  </td>
+  <td width=96 valign=top style='width:71.75pt;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:44.0pt'></td>
+  <td width=252 valign=top style='width:189.25pt;border-top:none;border-left:
+  none;border-bottom:solid #FFC000 1.0pt;border-right:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:44.0pt'>
+  <p>GNU General Public License version 3</p>
+  </td>
+ </tr>
+ <tr style='height:50.2pt'>
+  <td width=246 valign=top style='width:184.25pt;border-top:none;border-left:
+  solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p><b>TCP/IP library</b></p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>LWIP 2.1.1</p>
+  <p style='text-indent:-.25in'>Hex Five security extensions</p>
+  </td>
+  <td width=528 valign=top style='width:5.5in;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p style='text-indent:-.25in'>IP, ICMP, UDP, TCP, ARP, DHCP, DNS, SNTP, MQTT</p>
+  <p style='text-indent:-.25in'>Light weight single threaded execution</p>
+  <p style='text-indent:-.25in'>Fully integrated with SSL stack</p>
+  </td>
+  <td width=96 valign=top style='width:71.75pt;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p> 40KB ROM</p>
+  <p> 16KB RAM</p>
+  </td>
+  <td width=252 valign=top style='width:189.25pt;border-top:none;border-left:
+  none;border-bottom:solid #FFC000 1.0pt;border-right:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p>Modified BSD</p>
+  <p>permissive</p>
+  <p>commercial use ok</p>
+  </td>
+ </tr>
+ <tr style='height:50.2pt'>
+  <td width=246 valign=top style='width:184.25pt;border-top:none;border-left:
+  solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p><b>SSL library</b></p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>mbed TLS 2.23.0</p>
+  <p style='text-indent:-.25in'>Hex Five secure configuration</p>
+  </td>
+  <td width=528 valign=top style='width:5.5in;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p style='text-indent:-.25in'>TLSv1.2, Cipher TLS_AES_128_GCM_SHA256</p>
+  <p style='text-indent:-.25in'>ECC: prime256v1, Private Key NIST CURVE: P-256</p>
+  <p style='text-indent:-.25in'>Mutual authentication, Cert expiration verification, TLS large
+  fragment </p>
+  </td>
+  <td width=96 valign=top style='width:71.75pt;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p> 64KB ROM</p>
+  <p> 32KB RAM</p>
+  </td>
+  <td width=252 valign=top style='width:189.25pt;border-top:none;border-left:
+  none;border-bottom:solid #FFC000 1.0pt;border-right:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p><span lang=EN-GB>Apache 2.0 license</span></p>
+  <p><span lang=EN-GB>permissive </span></p>
+  <p>commercial use ok</p>
+  </td>
+ </tr>
+ <tr style='height:50.2pt'>
+  <td width=246 valign=top style='width:184.25pt;border-top:none;border-left:
+  solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p><b>Real Time OS </b>(optional)</p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>FreeRTOS 10.3.0</p>
+  <p style='text-indent:-.25in'>Hex Five integration with TEE</p>
+  </td>
+  <td width=528 valign=top style='width:5.5in;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p style='text-indent:-.25in'>Secure unprivileged execution of kernel, tasks, and interrupt
+  handlers</p>
+  <p style='text-indent:-.25in'>No memory shared with TCP/IP and SSL library code</p>
+  <p style='text-indent:-.25in'>No memory shared with other applications running in separate
+  zones</p>
+  </td>
+  <td width=96 valign=top style='width:71.75pt;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p> 32KB ROM</p>
+  <p> 16KB RAM</p>
+  </td>
+  <td width=252 valign=top style='width:189.25pt;border-top:none;border-left:
+  none;border-bottom:solid #FFC000 1.0pt;border-right:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p>MIT open-source license</p>
+  <p>permissive</p>
+  <p>commercial use ok</p>
+  </td>
+ </tr>
+ <tr style='height:50.2pt'>
+  <td width=246 valign=top style='width:184.25pt;border-top:none;border-left:
+  solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p><b>Trusted Execution Environment</b></p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>MultiZone Security TEE 2.0</p>
+  <p style='text-indent:-.25in'>RISC-V secure DMA extension</p>
+  <p style='text-indent:-.25in'>RISC-V shared PLIC extension</p>
+  </td>
+  <td width=528 valign=top style='width:5.5in;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p style='text-indent:-.25in'>4 separated Trusted Execution Environments (zones) enforced via
+  PMP</p>
+  <p style='text-indent:-.25in'>8 memory-mapped resources per zone – i.e. ram, rom, i/o, uart,
+  gpio, eth, …</p>
+  <p style='text-indent:-.25in'>Secure inter-zone messaging – no shared memory, no buffers, no
+  stack, etc</p>
+  <p style='text-indent:-.25in'>Protected user-mode interrupt handlers mapped to zones – plic /
+  clint</p>
+  </td>
+  <td width=96 valign=top style='width:71.75pt;border:none;border-bottom:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p>   4KB ROM</p>
+  <p>   4KB RAM</p>
+  </td>
+  <td width=252 valign=top style='width:189.25pt;border-top:none;border-left:
+  none;border-bottom:solid #FFC000 1.0pt;border-right:solid #FFC000 1.0pt;
+  padding:.05in .1in .05in .1in;height:50.2pt'>
+  <p>Free evaluation</p>
+  <p>Commercial license priced per design perpetual, no
+  royalties, no GPL contamination</p>
+  </td>
+ </tr>
+</table>
 
 
 ### Legalities ###
