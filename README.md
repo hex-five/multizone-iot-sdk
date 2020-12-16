@@ -202,7 +202,7 @@ mosquitto_sub $MQTT -t mzone-47194669/# -v &
 
 Publish (send) a "ping" message to zone #1:
 ```
-mosquitto_pub -$MQTT -t mzone-47194669/zone1 -m ping
+mosquitto_pub $MQTT -t mzone-47194669/zone1 -m ping
 ```
 Observe the "pong" reply received in the background.
 
