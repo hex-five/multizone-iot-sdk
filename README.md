@@ -190,16 +190,16 @@ cd ~/multizone-iot-sdk
 _Note:_ in all the following examples replace "mzone-47194669" with your randomly generated client id.
 
 
-Subscribe (receive) to the device topic "zone1" - background process:
+Subscribe (listen) to all topics for your device - background process:
 ```
-mosquitto_sub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone1 &
+mosquitto_sub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669 -v &
 ```
 
 Publish (send) a "ping" message to zone #1:
 ```
 mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-47194669/zone1 -m ping
 ```
-The background process listening for messages coming from zone #1 should receive and display a "pong" reply.
+Observe the "pong" reply received in the background.
 
 
 ### Deploy Remote Firmware Updates ###
