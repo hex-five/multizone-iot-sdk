@@ -114,17 +114,14 @@ static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection
 		/* Setup callback for incoming publish requests */
 		mqtt_set_inpub_callback(client, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, arg);
 
-		/* Subscribe to a topic named "subtopic" with QoS level x, call mqtt_sub_request_cb with result */
-		for (Zone zone = zone1; zone<=zone4; zone++){
+		/* Subscribe to all subtopics with QoS level x, call mqtt_sub_request_cb with result */
+		char topic[strlen(ci.client_id)+strlen("/#")+1];
+		strcpy(topic, ci.client_id); strcat(topic, "/#");
 
-			char topic[strlen(ci.client_id)+strlen("/zone?")+1];
-			strcpy(topic, ci.client_id); strcat(topic, "/zone?"); topic[sizeof(topic)-1-1] = (char)('0'+zone);
+		//err_t err = mqtt_subscribe(client, topic, MQTT_QOS, mqtt_sub_request_cb, arg);
+		err_t err = mqtt_subscribe(client, topic, MQTT_QOS, NULL, arg);
 
-		  //err_t err = mqtt_subscribe(client, topic, MQTT_QOS, mqtt_sub_request_cb, arg);
-			err_t err = mqtt_subscribe(client, topic, MQTT_QOS, NULL, arg);
-
-			//if (err != ERR_OK) printf("mqtt_subscribe return: %d\n", err);
-		}
+		//if (err != ERR_OK) printf("mqtt_subscribe return: %d\n", err);
 
 	} else {
 

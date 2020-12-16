@@ -371,15 +371,15 @@ int main(void) {
 
 				// outbound: zones => zone1 => broker
 				char msg[16+1]; msg[sizeof(msg)-1]='\0';
-                char topic[35];
-				strcpy(topic, client_id); strcat(topic, "/zone?");
+                char topic[strlen(client_id) + strlen("/zone?") +1];
+                strcpy(topic, client_id); strcat(topic, "/zone?");
 
-				for (int zone = zone1; zone<=zone4; zone++){
+				for (Zone zone = zone1; zone<=zone4; zone++){
 					if (MZONE_RECV(zone, msg)) {
 
                         // forward to broker if not consumed by zone1
-                        if (!msg_handler (zone, msg)) {
-							topic[sizeof(topic)-1-1] = (char)('0'+zone);
+                        if (msg_handler (zone, msg) == 0) {
+							topic[strlen(topic)-1] = (char)('0'+zone);
 							mqtt_wrap_publish(topic, msg);
 						}
 					}
