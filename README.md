@@ -420,6 +420,18 @@ _Note:_ For a complete explanation of the functionality of each zone/application
 </table>
 
 
+### Additional Resources ###
+
+- [MultiZone IoT Firmware Quick Start Guide](https://hex-five.com/)
+- [MultiZone IoT Firmware Datasheet](https://hex-five.com/)
+- [MultiZone IoT Firmware Website](https://hex-five.com/multizone-secure-iot-firmware-riscv/)
+- [MultiZone TEE Reference Manual](http://github.com/hex-five/multizone-sdk/blob/master/manual.pdf)
+- [MultiZone TEE Datasheet](https://hex-five.com/wp-content/uploads/2020/01/multizone-datasheet-20200109.pdf)
+- [MultiZone TEE Website](https://hex-five.com/multizone-security-sdk/)
+- [Frequently Asked Questions](http://hex-five.com/faq/)
+- [Contact Hex Five http://hex-five.com/contact](http://hex-five.com/contact)
+
+
 ### Legalities ###
 
 Please remember that export/import and/or use of strong cryptography software, providing cryptography hooks, or even just communicating technical details about cryptography software is illegal in some parts of the world. So when you import this software to your country, re-distribute it from there or even just email technical suggestions or even source patches to the authors or other people you are strongly advised to pay close attention to any laws or regulations which apply to you. Hex Five Security, Inc. and the authors of the software included in this repository are not liable for any violations you make here. So be careful, it is your responsibility.
