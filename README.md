@@ -34,7 +34,8 @@ The MultiZone SDK works with any versions of Linux, Windows, and Mac capable of 
 
 ```
 sudo apt update
-sudo apt install git gmake default-jre libhidapi-dev libftdi1-2 gtkterm mosquitto-clients
+sudo apt install git gmake default-jre libhidapi-dev libftdi1-2
+sudo apt install gtkterm mosquitto-clients
 ```
 Ubuntu 18.04 LTS additional dependency
 
