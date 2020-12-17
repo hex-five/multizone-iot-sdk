@@ -1,9 +1,12 @@
 [submodule "ext/lwip"]
 	path = ext/lwip
 	url = https://git.savannah.nongnu.org/git/lwip.git
+	ignore = dirty
 [submodule "ext/mbedtls"]
 	path = ext/mbedtls
 	url = https://github.com/ARMmbed/mbedtls.git
+	ignore = dirty
 [submodule "ext/FreeRTOS-Kernel"]
 	path = ext/freertos
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
+	ignore = dirty
