@@ -37,16 +37,16 @@ sudo apt update
 sudo apt install git gmake default-jre libhidapi-dev libftdi1-2
 sudo apt install gtkterm mosquitto-clients
 ```
-Ubuntu 18.04 LTS additional dependency
+_Note_: the package gtkterm is optional and required only to connect to the reference application via a local terminal. It is not required to build, debug, and load the MultiZone firmware or to connect to the target via Ethernet. Any other serial terminal application of choice would do.
 
+_Note_: the package mosquitto-clients is optional and required only to test MQTT funcionality including telemetry and remote firmware updates. It is not required to build, debug, and load the MultiZone firmware or to connect to the target via Ethernet. Any other MQTT client application of choice would do.
+
+Ubuntu 18.04 LTS additional dependency
 ```
 sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ focal main universe"
 sudo apt update
 sudo apt install libncurses-dev
 ```
-_Note_: the package gtkterm is optional and required only to connect to the reference application via a local terminal. It is not required to build, debug, and load the MultiZone firmware or to connect to the target via Ethernet. Any other serial terminal application of choice would do.
-
-_Note_: the package mosquitto-clients is optional and required only to test MQTT funcionality including telemetry and remote firmware updates. It is not required to build, debug, and load the MultiZone firmware or to connect to the target via Ethernet. Any other MQTT client application of choice would do.
 
 **GNU RISC-V Toolchain**
 
