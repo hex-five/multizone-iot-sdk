@@ -34,7 +34,7 @@ The MultiZone SDK works with any versions of Linux, Windows, and Mac capable of 
 
 ```
 sudo apt update
-sudo apt install gmake default-jre libhidapi-dev libftdi1-2 gtkterm mosquitto-clients
+sudo apt install git gmake default-jre libhidapi-dev libftdi1-2 gtkterm mosquitto-clients
 ```
 Ubuntu 18.04 LTS additional dependency
 
@@ -84,7 +84,7 @@ Reboot for these changes to take effect.
 
 ```
 cd ~
-git clone --recursive git@github.com:hex-five/multizone-iot-sdk.git
+git clone --recursive https://github.com/hex-five/multizone-iot-sdk.git
 cd multizone-iot-sdk
 git apply -p1 ext/lwip.patch --directory=ext/lwip
 git apply -p1 ext/freertos.patch --directory=ext/freertos
