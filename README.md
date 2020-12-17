@@ -34,7 +34,7 @@ The MultiZone SDK works with any versions of Linux, Windows, and Mac capable of 
 
 ```
 sudo apt update
-sudo apt install git gmake default-jre libhidapi-dev libftdi1-2
+sudo apt install git make default-jre libhidapi-dev libftdi1-2
 sudo apt install gtkterm mosquitto-clients
 ```
 _Note_: the package gtkterm is optional and required only to connect to the reference application via a local terminal. It is not required to build, debug, and load the MultiZone firmware or to connect to the target via Ethernet. Any other serial terminal application of choice would do.
