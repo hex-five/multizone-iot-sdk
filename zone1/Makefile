@@ -4,7 +4,6 @@ TARGET = zone1.elf
 
 C_SRCS += main.c mqtt_wrap.c queue.c
 
-INCLUDES += -I ./
 INCLUDES += -I ../ext
 INCLUDES += -I ../ext/multizone
 INCLUDES += -I ../ext/lwip/src/include

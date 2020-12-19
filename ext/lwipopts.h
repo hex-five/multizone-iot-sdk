@@ -25,6 +25,7 @@
 #define SNTP_MAX_SERVERS			2
 #define SNTP_SERVER_1 "pool.ntp.org"
 #define SNTP_SERVER_0 "time.nist.gov"
+#define MQTT_VAR_HEADER_BUFFER_LEN 256
 
 
 #endif /* __LWIPOPTS_H__ */
