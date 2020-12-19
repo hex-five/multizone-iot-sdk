@@ -156,12 +156,12 @@ static struct pbuf* low_level_input(struct netif *netif) {
 	} else 	if ( (*(volatile uint32_t *)(XEMAC_BASE + XEMAC_RXPING_CTRL_OFF) & XEMAC_RX_STATUS_MASK) !=0){
 		rx_buff = (volatile uint32_t *)(XEMAC_BASE + XEMAC_RXPING_OFF);
 		rx_ctrl = (volatile uint32_t *)(XEMAC_BASE + XEMAC_RXPING_CTRL_OFF);
-		rx_ping_pong == PING;
+		rx_ping_pong = PING;
 
 	} else 	if ( (*(volatile uint32_t *)(XEMAC_BASE + XEMAC_RXPONG_CTRL_OFF) & XEMAC_RX_STATUS_MASK) !=0){
 		rx_buff = (volatile uint32_t *)(XEMAC_BASE + XEMAC_RXPONG_OFF);
 		rx_ctrl = (volatile uint32_t *)(XEMAC_BASE + XEMAC_RXPONG_CTRL_OFF);
-		rx_ping_pong == PONG;
+		rx_ping_pong = PONG;
 
 	} else	return NULL; // no data ready
 

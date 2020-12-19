@@ -24,12 +24,12 @@ C_SRCS += \
 C_SRCS += $(FREERTOS_SRC_DIR)/portable/GCC/RISC-V/port.c
 ASM_SRCS += $(FREERTOS_SRC_DIR)/portable/GCC/RISC-V/portASM.S
 
+INCLUDES += -I ../ext
+INCLUDES += -I ../ext/multizone
+
 INCLUDES += \
-	-I. \
 	-I$(FREERTOS_SRC_DIR)/include \
 	-I$(FREERTOS_SRC_DIR)/portable/GCC/RISC-V \
 	-I$(FREERTOS_SRC_DIR)/portable/GCC/RISC-V/chip_specific_extensions/RV32I_CLINT_no_extensions \
-
-INCLUDES += -I ../ext/multizone
 
 include $(NEWLIB_DIR)/newlib.mk

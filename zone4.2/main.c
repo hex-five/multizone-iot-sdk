@@ -2,8 +2,8 @@
 
 #include <string.h>	// strcmp()
 
-#include "../ext/freertos/include/FreeRTOS.h"
-#include "../ext/freertos/include/task.h"     /* RTOS task related API prototypes. */
+#include "FreeRTOS.h"
+#include "task.h"     /* RTOS task related API prototypes. */
 
 #include "platform.h"
 #include "multizone.h"

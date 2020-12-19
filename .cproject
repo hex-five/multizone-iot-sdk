@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="cdt.managedbuild.toolchain.gnu.cross.base.1316478169">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.cross.base.1316478169" moduleId="org.eclipse.cdt.core.settings" name="X300">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildProperties="" description="Hex Five RISC-V softcore for Digilent Arty-7 FPGA" id="cdt.managedbuild.toolchain.gnu.cross.base.1316478169" name="X300" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="cdt.managedbuild.toolchain.gnu.cross.base.1316478169.1269890805" name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.base.215742745" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.base" unusedChildren="cdt.managedbuild.tool.gnu.cross.cpp.compiler;cdt.managedbuild.tool.gnu.cross.cpp.linker">
+							<option id="cdt.managedbuild.option.gnu.cross.prefix.2070754290" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix" value="riscv64-unknown-elf-" valueType="string"/>
+							<option id="cdt.managedbuild.option.gnu.cross.path.453989969" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path" value="${RISCV}/bin" valueType="string"/>
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross.1735709964" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/multizone-iot-sdk}" id="cdt.managedbuild.builder.gnu.cross.1673703712" keepEnvironmentInBuildfile="true" managedBuildOn="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="optimal" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.1606324894" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.both.asm.option.include.paths.158636240" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/bsp/X300}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext/multizone}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext/mbedtls/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext/lwip/src/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext/freertos/include}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.263221940" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1356317806" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker">
+								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.286975222" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.563424996" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler">
+								<option id="gnu.c.compiler.option.dialect.std.1610406237" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.531720994" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/bsp/X300}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext/multizone}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext/mbedtls/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext/lwip/src/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/multizone-iot-sdk/ext/freertos/include}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.879371910" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.1147447051" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver"/>
+						</toolChain>
+					</folderInfo>
+					<fileInfo id="cdt.managedbuild.toolchain.gnu.cross.base.1316478169.796299066" name="owi_sequence.h" rcbsApplicability="disable" resourcePath="zone4.2/owi_sequence.h" toolsToInvoke=""/>
+					<sourceEntries>
+						<entry excluding="ext/lwip/doc|ext/mbedtls/visualc|ext/mbedtls/tests|ext/mbedtls/scripts|ext/mbedtls/programs|ext/mbedtls/doxygen|ext/mbedtls/docs|ext/mbedtls/configs|ext/mbedtls/ChangeLog.d|ext/mbedtls/3rdparty|zone4.2/owi_sequence.h|ext/freertos/portable/Common|ext/freertos/portable/CodeWarrior|ext/freertos/portable/CCS|ext/freertos/portable/BCC|ext/freertos/portable/ARMv8M|ext/freertos/portable/ARMClang|ext/freertos/portable/WizC|ext/freertos/portable/ThirdParty|ext/freertos/portable/Tasking|ext/freertos/portable/Softune|ext/freertos/portable/SDCC|ext/freertos/portable/RVDS|ext/freertos/portable/Rowley|ext/freertos/portable/Renesas|ext/freertos/portable/Paradigm|ext/freertos/portable/oWatcom|ext/freertos/portable/MSVC-MingW|ext/freertos/portable/MPLAB|ext/freertos/portable/MikroC|ext/freertos/portable/Keil|ext/freertos/portable/IAR|ext/freertos/portable/GCC/TriCore_1782|ext/freertos/portable/GCC/STR75x|ext/freertos/portable/GCC/RX700v3_DPFPU|ext/freertos/portable/GCC/RX600v2|ext/freertos/portable/GCC/RX600|ext/freertos/portable/GCC/RX200|ext/freertos/portable/GCC/RX100|ext/freertos/portable/GCC/RL78|ext/freertos/portable/GCC/PPC440_Xilinx|ext/freertos/portable/GCC/PPC405_Xilinx|ext/freertos/portable/GCC/NiosII|ext/freertos/portable/GCC/MSP430F449|ext/freertos/portable/GCC/MicroBlazeV9|ext/freertos/portable/GCC/MicroBlazeV8|ext/freertos/portable/GCC/MicroBlaze|ext/freertos/portable/GCC/MCF5235|ext/freertos/portable/GCC/IA32_flat|ext/freertos/portable/GCC/HCS12|ext/freertos/portable/GCC/H8S2329|ext/freertos/portable/GCC/CORTUS_APS3|ext/freertos/portable/GCC/ColdFire_V2|ext/freertos/portable/GCC/AVR32_UC3|ext/freertos/portable/GCC/AVR_Mega0|ext/freertos/portable/GCC/AVR_AVRDx|ext/freertos/portable/GCC/ATMega323|ext/freertos/portable/GCC/ARM7_LPC23xx|ext/freertos/portable/GCC/ARM7_LPC2000|ext/freertos/portable/GCC/ARM7_AT91SAM7S|ext/freertos/portable/GCC/ARM7_AT91FR40008|ext/freertos/portable/GCC/ARM_CRx_No_GIC|ext/freertos/portable/GCC/ARM_CR5|ext/freertos/portable/GCC/ARM_CM7|ext/freertos/portable/GCC/ARM_CM4F|ext/freertos/portable/GCC/ARM_CM4_MPU|ext/freertos/portable/GCC/ARM_CM33_NTZ|ext/freertos/portable/GCC/ARM_CM33|ext/freertos/portable/GCC/ARM_CM3_MPU|ext/freertos/portable/GCC/ARM_CM3|ext/freertos/portable/GCC/ARM_CM23_NTZ|ext/freertos/portable/GCC/ARM_CM23|ext/freertos/portable/GCC/ARM_CM0|ext/freertos/portable/GCC/ARM_CA9|ext/freertos/portable/GCC/ARM_CA53_64_BIT|ext/lwip/test|ext/lwip/contrib" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="multizone-iot-sdk.null.1020794268" name="multizone-iot-sdk"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="X300">
+			<resource resourceType="PROJECT" workspacePath="/multizone-iot-sdk"/>
+		</configuration>
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/multizone-iot-sdk"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.cross.base.1316478169;cdt.managedbuild.toolchain.gnu.cross.base.1316478169.1269890805;cdt.managedbuild.tool.gnu.cross.c.compiler.563424996;cdt.managedbuild.tool.gnu.c.compiler.input.879371910">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+		<buildTargets>
+			<target name="all" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j8</buildArguments>
+				<buildTarget>all</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j8</buildArguments>
+				<buildTarget>clean</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="load" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments>-j8</buildArguments>
+				<buildTarget>load</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+		</buildTargets>
+	</storageModule>
+</cproject>

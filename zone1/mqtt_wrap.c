@@ -3,6 +3,7 @@
 #include <string.h> // memset()
 
 #include "lwip/opt.h"
+#include "lwip/err.h"
 #include "lwip/apps/mqtt.h"
 #include "lwip/apps/mqtt_priv.h"
 #include "lwip/altcp_tls.h"
