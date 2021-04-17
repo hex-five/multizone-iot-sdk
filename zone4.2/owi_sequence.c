@@ -26,9 +26,9 @@ struct sequence_step{
 	int duration_ms;
 };
 
-// R6 19-NOV-2020
+// R6 16-JAN-2021
 #define T_STOP 	1000
-#define T_GRIP 	1700
+#define T_GRIP 	1200
 #define T_WRIST 1800
 #define T_ARM  	1800
 #define T_BASE	3000
@@ -42,7 +42,7 @@ static struct sequence_step main_sequence[] = {
 	{ .command = STOP, 				.duration_ms = T_STOP },
 	{ .command = GRIP_CLOSE, 		.duration_ms = T_GRIP },
 	{ .command = BASE_COUNTERCLK,	.duration_ms = T_BASE },
-    { .command = BASE_COUNTERCLK,	.duration_ms = T_ARM   * 0.68},
+    { .command = BASE_COUNTERCLK,	.duration_ms = T_ARM   * 0.75}, // 0.68
 	{ .command = ARM_UP, 			.duration_ms = T_ARM   * 1.05},
 	{ .command = ELBOW_UP, 			.duration_ms = T_ARM   * 0.05},
 	{ .command = WRIST_DWN, 		.duration_ms = T_WRIST * 0.80},

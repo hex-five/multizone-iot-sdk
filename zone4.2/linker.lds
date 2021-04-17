@@ -6,8 +6,7 @@ ENTRY( _start )
 
 MEMORY {
    flash (rxai!w) : ORIGIN = sh_buff2_start, LENGTH = 8K    
-/* flash (rxai!w) : ORIGIN = flash + 0x8800, LENGTH = 8K */
-   ram   (wa!xri) : ORIGIN = dtim  + 0xF000, LENGTH = 4K
+   ram   (wa!xri) : ORIGIN = dtim + 0xF000, LENGTH = 4K
 }
 
 SECTIONS {
