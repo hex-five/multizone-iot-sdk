@@ -2,10 +2,11 @@ Multiple:
 
 ext/lwip: BSD License https://lwip.fandom.com/wiki/License
 ext/mbetls: Apache License 2.0 https://github.com/ARMmbed/mbedtls/blob/development/LICENSE
-ext/freertos: MIT License https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/375b08529593e97c7cf29d405fa3af9b98d0cd8a/LICENSE.md
-ext/multizone: Hex Five Evaluation License https://github.com/hex-five/multizone-iot-sdk/blob/master/ext/multizone/LICENSE
+ext/freertos: MIT License https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/main/LICENSE.md
+ext/printf: MIT License https://github.com/mpaland/printf/blob/master/LICENSE
+ext/multizone: Evaluation License https://github.com/hex-five/multizone-sdk/blob/master/LICENSE
 
-All other folders: ISC License https://www.isc.org/licenses
+All other files and folders: ISC License https://www.isc.org/licenses
 
 Copyright © 2020 by Hex Five Security, Inc.
 

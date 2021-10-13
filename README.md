@@ -50,20 +50,20 @@ sudo apt install libncurses-dev
 
 **GNU RISC-V Toolchain**
 
-Hex Five reference build: RISC-V GNU Toolchain Linux 64-bit June 13, 2020
+Hex Five reference build: RISC-V GNU Toolchain Linux 64-bit June 18, 2021
 ```
 cd ~
-wget https://hex-five.com/wp-content/uploads/riscv-gnu-toolchain-20200613.tar.xz
-tar -xvf riscv-gnu-toolchain-20200613.tar.xz
+wget https://hex-five.com/wp-content/uploads/riscv-gnu-toolchain-20210618.tar.xz
+tar -xvf riscv-gnu-toolchain-20210618.tar.xz
 ```
 
 **OpenOCD on-chip debugger**
 
-Hex Five reference build: RISC-V openocd Linux 64-bit June 13, 2020
+Hex Five reference build: RISC-V openocd Linux 64-bit August 7, 2021
 ```
 cd ~
-wget https://hex-five.com/wp-content/uploads/riscv-openocd-20200613.tar.xz
-tar -xvf riscv-openocd-20200613.tar.xz
+wget https://hex-five.com/wp-content/uploads/riscv-openocd-20210807.tar.gz
+tar -xvf riscv-openocd-20210807.tar.gz
 ```
 
 **Linux USB udev rules**
@@ -122,11 +122,11 @@ Disconnect the JTAG connector if OpenOCD is not in use otherwise the CPU is perm
 
 Connect the UART port (ARTY micro USB J10) as indicated in the user manual. On your computer, start a serial terminal console (gtkterm) and connect to /dev/ttyUSB1 at 115200-8-N-1.
 
-Connect the Ethernet port to an Internet router or to your computer if Internet sharing is enabled - see https://help.ubuntu.com/community/Internet/ConnectionSharing. The router should provide DHCP configuration including one DNS servers. There is no need to open inbound ports for the MQTT client to work. If your local network blocks outbound connections to the default MQTT/TLS port 8883, you can reconfigure the client to use the HTTPS/TLS port 443, which is usually open - see MQTT configuration file [mqtt_config.h](https://github.com/hex-five/multizone-iot-sdk/blob/master/zone1/mqtt_config.h) 
+Connect the Ethernet port to an Internet router, or to your computer if Internet sharing is enabled - see https://help.ubuntu.com/community/Internet/ConnectionSharing. The router should provide DHCP configuration including one DNS servers. There is no need to open inbound ports for the MQTT client to work. If your local network blocks outbound connections to the default MQTT/TLS port 8883, you can reconfigure the client to use the HTTPS/TLS port 443, which is usually open - see MQTT configuration file [mqtt_config.h](https://github.com/hex-five/multizone-iot-sdk/blob/master/zone1/mqtt_config.h) 
 
 Press the reset button on the board and hit the enter key a few times on your serial terminal to synchronize the UART port.  
 
-After a few seconds the client should connect to Hex Five's public MQTT broker:
+After a few seconds the client should connect to the Hex Five's public MQTT broker:
 
 ```
 =====================================================================
@@ -147,15 +147,21 @@ Hart id       : 0x0
 CPU clock     : 64 MHz 
 RTC clock     : 16 KHz 
 
+PLIC @0x0c000000
+DMAC @0x10040000
+UART @0x10013000
+GPIO @0x10012000
+EMAC @0x60000000
+
 Z1 > netif_link_callback: up
  
 Z1 > netif_status_callback: address 192.168.0.130
  
 Z1 > dns_callback: mqtt-broker.hex-five.com 54.176.2.35
  
-Z1 > sntp_process: 1608056327 Tue Dec 15 18:18:47 2020
+Z1 > sntp_process: 1634164010 Wed Oct 13 15:29:30 2021
  
-Z1 > client_id: mzone-47194669 
+Z1 > client_id: mzone-2094fc9a
  
 Z1 > mqtt: connecting ... 
  
@@ -182,7 +188,7 @@ Z2 > Commands: yield send recv pmp load store exec dma stats timer restart
 
 For a detailed explanation of the features of the MultiZone TEE see the [MultiZone TEE Reference Manual](https://github.com/hex-five/multizone-iot-sdk/blob/master/ext/multizone/manual.pdf)
 
-_Note:_ take note of your randomly generated client id as you'll need it to interact with the target via MQTT messages published and subscribed to topics mzone-xxxxxxxx/zonex (mzone-47194669 in this example). The MQTT client id is generated randomly for each new MQTT session upon board reset.
+_Note:_ take note of your randomly generated client_id as you'll need it to interact with the target via MQTT messages published and subscribed to topics mzone-xxxxxxxx/zonex (mzone-2094fc9a in the example above). The MQTT client_id is generated randomly for each new MQTT session upon board reset.
 
 
 ### Send and receive MQTT messages ###
@@ -193,17 +199,17 @@ export MQTT=$MQTT" --cafile pki/hexfive-ca.crt"
 export MQTT=$MQTT" --cert pki/test.crt"
 export MQTT=$MQTT" --key pki/test.key"
 ```
-_Note:_ in the following examples replace "mzone-47194669" with your randomly generated client id.
+_Note:_ in the following examples replace "mzone-2094fc9a" with your randomly generated client id.
 
 
 Subscribe (listen) to all topics for your device - background process:
 ```
-mosquitto_sub $MQTT -t mzone-47194669/# -v &
+mosquitto_sub $MQTT -t mzone-2094fc9a/# -v &
 ```
 
 Publish (send) a "ping" message to zone #1:
 ```
-mosquitto_pub $MQTT -t mzone-47194669/zone1 -m ping
+mosquitto_pub $MQTT -t mzone-2094fc9a/zone1 -m ping
 ```
 Observe the "pong" reply received in the background.
 
@@ -212,17 +218,17 @@ Observe the "pong" reply received in the background.
 
 Deploy the rainbow LED appication to zone #3 (binary zone3.1/zone3.bin):
 ```
-mosquitto_pub $MQTT -t mzone-47194669/zone3 -f zone3.1/zone3.bin
+mosquitto_pub $MQTT -t mzone-2094fc9a/zone3 -f zone3.1/zone3.bin
 ```
 
 Delopy the robot application to zone #4 (binary zone4.1/zone4.bin):
 ```
-mosquitto_pub $MQTT -t mzone-47194669/zone4 -f zone4.1/zone4.bin
+mosquitto_pub $MQTT -t mzone-2094fc9a/zone4 -f zone4.1/zone4.bin
 ```
 
 Optional: delopy the FreeRTOS-based version of the robot application (binary zone4.2/zone4.bin):
 ```
-mosquitto_pub $MQTT -t mzone-47194669/zone4 -f zone4.2/zone4.bin
+mosquitto_pub $MQTT -t mzone-2094fc9a/zone4 -f zone4.2/zone4.bin
 ```
 
 _Note:_ For a complete explanation of the functionality of each zone/application see the [MultiZone SDK Reference Manual](https://github.com/hex-five/multizone-iot-sdk/blob/master/ext/multizone/manual.pdf).
@@ -407,8 +413,8 @@ _Note:_ For a complete explanation of the functionality of each zone/application
   </td>
   <td width=96 valign=top style='width:71.75pt;border:none;border-bottom:solid #FFC000 1.0pt;
   padding:.05in .1in .05in .1in;height:50.2pt'>
-  <p>   4KB ROM</p>
-  <p>   4KB RAM</p>
+  <p>   8KB ROM</p>
+  <p>   2KB RAM</p>
   </td>
   <td width=252 valign=top style='width:189.25pt;border-top:none;border-left:
   none;border-bottom:solid #FFC000 1.0pt;border-right:solid #FFC000 1.0pt;
@@ -439,4 +445,4 @@ Please remember that export/import and/or use of strong cryptography software, p
 
 MultiZone and HEX-Five are registered trademarks of Hex Five Security, Inc.
 
-MultiZone technology is patent pending US 16450826, PCT US1938774.
+MultiZone technology is protected by patents US 16450826 and PCT US1938774.

@@ -7,11 +7,11 @@
 
 BOARD ?= X300
 ifeq ($(BOARD),X300)
-	ARCH := rv32
-	RISCV_ARCH := $(ARCH)imac
-	RISCV_ABI := ilp32
+    ARCH := rv32
+    RISCV_ARCH := $(ARCH)imac
+    RISCV_ABI := ilp32
 else
-	$(error Unsupported board $(BOARD))
+    $(error Unsupported board $(BOARD))
 endif
 
 
@@ -50,9 +50,9 @@ all: clean
 	$(MAKE) -C zone2
 	$(MAKE) -C zone3
 	$(MAKE) -C zone3.1
-	$(MAKE) -C zone4	
+	$(MAKE) -C zone4
 	$(MAKE) -C zone4.1
-	$(MAKE) -C zone4.2	
+	$(MAKE) -C zone4.2
 	$(MAKE) -C bsp/$(BOARD)/boot
 	
 	java -jar ./ext/multizone/multizone.jar \
@@ -70,14 +70,14 @@ clean:
 	$(MAKE) -C zone2 clean
 	$(MAKE) -C zone3 clean
 	$(MAKE) -C zone3.1 clean
-	$(MAKE) -C zone4 clean	
+	$(MAKE) -C zone4 clean
 	$(MAKE) -C zone4.1 clean
 	$(MAKE) -C zone4.2 clean
 	$(MAKE) -C bsp/$(BOARD)/boot clean
-	rm -f multizone.hex
+	rm -f multizone.hex multizone.bin
 
 #############################################################
-# Load and debug variables and rules
+# Load to flash
 #############################################################
 
 ifndef OPENOCD
@@ -95,7 +95,7 @@ GDB_LOAD_CMDS += -ex "set mem inaccessible-by-default off"
 GDB_LOAD_CMDS += -ex "set remotetimeout 240"
 GDB_LOAD_CMDS += -ex "set arch riscv:$(ARCH)"
 GDB_LOAD_CMDS += -ex "target extended-remote localhost:$(GDB_PORT)"
-GDB_LOAD_CMDS += -ex "monitor reset halt"
+GDB_LOAD_CMDS += -ex "monitor reset init"
 GDB_LOAD_CMDS += -ex "monitor flash protect 0 64 last off"
 GDB_LOAD_CMDS += -ex "load"
 GDB_LOAD_CMDS += -ex "monitor resume"

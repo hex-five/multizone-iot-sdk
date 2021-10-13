@@ -15,6 +15,7 @@ LDFLAGS += --specs=nano.specs
 LDFLAGS += --specs=nosys.specs
 LDFLAGS += -nostartfiles
 LDFLAGS += -Xlinker --gc-sections
+LDFLAGS += -Wl,-Map,$(MAP) -Wl,--cref
 
 ASM_OBJS := $(ASM_SRCS:.S=.o)
 C_OBJS := $(C_SRCS:.c=.o)
@@ -26,23 +27,24 @@ CLEAN_OBJS += $(TARGET) $(LINK_OBJS)
 
 CFLAGS += -march=$(RISCV_ARCH)
 CFLAGS += -mabi=$(RISCV_ABI)
-CFLAGS += -mcmodel=medany
+CFLAGS += -mcmodel=medlow
 CFLAGS += -msmall-data-limit=8
-CFLAGS += -ffunction-sections -fdata-sections -ffreestanding
-CFLAGS += -g3 -Os
+CFLAGS += -ffunction-sections -fdata-sections
+CFLAGS += -Wall -Wextra -Wno-unused-parameter
+CFLAGS += -Os -ggdb
 
 HEX = $(subst .elf,.hex,$(TARGET))
-BIN = $(subst .elf,.bin,$(TARGET))
 LST = $(subst .elf,.lst,$(TARGET))
+MAP = $(subst .elf,.map,$(TARGET))
 SIZ = $(subst .elf,.siz,$(TARGET))
-CLEAN_OBJS += $(HEX) $(BIN) $(LST) $(SIZ)
+BIN = $(subst .elf,.bin,$(TARGET))
 
 $(TARGET): $(LINK_OBJS) $(LINK_DEPS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(LDFLAGS) $(LINK_OBJS) $(OBJS) -L../ext -llwip -lmbedtls -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) $(LINK_OBJS) -L../ext -llwip -lmbedtls -o $@ $(LDFLAGS)
 	$(OBJCOPY) -O ihex $(TARGET) $(HEX) --gap-fill 0x00
-	$(OBJCOPY) -S -Iihex -Obinary $(HEX) $(BIN)
 	$(OBJDUMP) --all-headers --demangle --disassemble --file-headers --wide -D $(TARGET) > $(LST)
 	$(SIZE) --format=sysv $(TARGET) > $(SIZ)
+	$(OBJCOPY) -S -Iihex -Obinary $(HEX) $(BIN)	
 
 $(ASM_OBJS): %.o: %.S $(HEADERS)
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
@@ -52,5 +54,5 @@ $(C_OBJS): %.o: %.c $(HEADERS)
 
 .PHONY: clean
 clean:
-	rm -f $(CLEAN_OBJS) 
+	rm -rf $(TARGET) $(LINK_OBJS) $(HEX) $(LST) $(MAP) $(SIZ) $(BIN)
 

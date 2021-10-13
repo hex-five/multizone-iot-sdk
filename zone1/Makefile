@@ -2,14 +2,19 @@
 
 TARGET = zone1.elf
 
-C_SRCS += main.c mqtt_wrap.c queue.c
-
-INCLUDES += -I ../ext
+C_SRCS += main.c mqtt_wrap.c queue.c 
 INCLUDES += -I ../ext/multizone
+LINKER_SCRIPT := linker.lds
+
+### printf
+CFLAGS   += -DPRINTF_INCLUDE_CONFIG_H
+INCLUDES += -I ../ext/printf
+C_SRCS   += ../ext/printf/printf.c 
+
+### libs
+INCLUDES += -I ../ext
 INCLUDES += -I ../ext/lwip/src/include
 INCLUDES += -I ../ext/mbedtls/include
-
-LINKER_SCRIPT := linker.lds
 
 ### BSP
 BSP_BASE := ../bsp

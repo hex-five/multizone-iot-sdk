@@ -8,6 +8,11 @@
 #define RTC_FREQ 	   16416
 
 // -----------------------------------------------------------------------------
+// Ethernet
+// -----------------------------------------------------------------------------
+#define XEMAC_BASE 0x60000000
+
+// -----------------------------------------------------------------------------
 // RTC (CLINT)
 // -----------------------------------------------------------------------------
 #define CLINT_BASE	0x02000000
@@ -15,21 +20,6 @@
 #define CLINT_MSIP	    0x0000
 #define CLINT_MTIMECMP  0x4000
 #define CLINT_MTIME	    0xBFF8
-
-// -----------------------------------------------------------------------------
-// PLIC (shared)
-// ------------------------------------------------------------------------------
-#define PLIC_BASE 	0x0C000000
-
-#define PLIC_PRI_OFFSET 			0
-#define PLIC_PRI_SHIFT_PER_SOURCE 	2
-#define PLIC_EN_OFFSET				0x2000
-#define PLIC_EN_SHIFT_PER_TARGET	1
-#define PLIC_THRES_OFFSET			0x200000
-#define PLIC_CLAIM_OFFSET			0x200004
-
-#define PLIC_UART_RX_SOURCE			3
-#define PLIC_XEMAC_RX_SOURCE		21
 
 // -----------------------------------------------------------------------------
 // UART
@@ -43,6 +33,8 @@
 #define UART_IE 	0x10
 #define UART_IP 	0x14
 #define UART_DIV 	0x18
+
+#define UART_IRQ    11 // PLIC_SRC_UART 3
 
 // -----------------------------------------------------------------------------
 // PWM
@@ -112,15 +104,25 @@
 
 // -----------------------------------------------------------------------------
 // LED0 (GPIO)
-// -----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 #define LED_RED	 1
 #define LED_GRN	 2
 #define LED_BLUE 3
 
 // -----------------------------------------------------------------------------
-// Ethernet
-// -----------------------------------------------------------------------------
-#define XEMAC_BASE 0x60000000
+// PLIC (shared)
+// ------------------------------------------------------------------------------
+#define PLIC_BASE 	0x0C000000
+
+#define PLIC_PRI 			0
+#define PLIC_EN				0x002000
+#define PLIC_IP				0x001000
+#define PLIC_THRES			0x200000
+#define PLIC_CLAIM			0x200004
+#define PLIC_SHIFT_PER_SRC 	2
+
+#define PLIC_SRC_UART		3
+#define PLIC_SRC_XEMAC		21
 
 // -----------------------------------------------------------------------------
 // DMA (single channel mockup)
@@ -138,7 +140,7 @@
 #define DMA_TR_DEST_OFF		0x4C /* +ch*0x14 */
 #define DMA_TR_SIZE_OFF		0x50 /* +ch*0x14 */
 
-#define DMA_IRQ				3
+#define DMA_IRQ				  19 /* Mockup */
 
 // -----------------------------------------------------------------------------
 // C Helper functions
@@ -146,14 +148,13 @@
 
 #define _REG64(base, offset) (*(volatile uint64_t *)((base) + (offset)))
 #define _REG32(base, offset) (*(volatile uint32_t *)((base) + (offset)))
-#define _REG16(base, offset) (*(volatile uint16_t *)((base) + (offset)))
 
 #define CLINT_REG(offset) _REG64(CLINT_BASE, offset)
 #define GPIO_REG(offset)  _REG32(GPIO_BASE, offset)
 #define PWM_REG(offset)   _REG32(PWM_BASE, offset)
 #define UART_REG(offset)  _REG32(UART_BASE, offset)
 #define PLIC_REG(offset)  _REG32(PLIC_BASE, offset)
-#define DMA_REG(offset) _REG32(DMA_BASE, offset)
+#define DMA_REG(offset)   _REG32(DMA_BASE, offset)
 
 
 #endif /* HEXFIVE_PLATFORM_H */

@@ -5,9 +5,9 @@ OUTPUT_ARCH( "riscv" )
 ENTRY( _start )
 
 MEMORY {
-/* flash (rxai!w) : ORIGIN = flash + 0x8800, LENGTH = 2K */
-   flash (rxai!w) : ORIGIN = sh_buff1_start, LENGTH = 2K 
-   ram   (wa!xri) : ORIGIN = dtim  + 0xE800, LENGTH = 2K
+  flash (rxai!w) : ORIGIN = sh_buff1_start, LENGTH = 4K
+  prog  (rxai!w) : ORIGIN = sh_buff1_start, LENGTH = 4K
+  ram   (wa!xri) : ORIGIN = dtim  + 0xE800, LENGTH = 2K
 }
 
 SECTIONS {
@@ -21,19 +21,19 @@ SECTIONS {
   .init : ALIGN(64 / 8)
   {
     KEEP (*(SORT_NONE(.init)))
-  } >flash AT>flash 
+  } >prog AT>flash 
 
   .fini : ALIGN(64 / 8)
   {
     KEEP (*(SORT_NONE(.fini)))
-  } >flash AT>flash 
+  } >prog AT>flash 
 
   .preinit_array : ALIGN(64 / 8) 
   {
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array))
     PROVIDE_HIDDEN (__preinit_array_end = .);
-  } >flash AT>flash
+  } >prog AT>flash
 
   .init_array : ALIGN(64 / 8) 
   {
@@ -41,7 +41,7 @@ SECTIONS {
     KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
     KEEP (*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .ctors))
     PROVIDE_HIDDEN (__init_array_end = .);
-  } >flash AT>flash
+  } >prog AT>flash
 
   .fini_array : ALIGN(64 / 8)
   {
@@ -49,7 +49,7 @@ SECTIONS {
     KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
     KEEP (*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .dtors))
     PROVIDE_HIDDEN (__fini_array_end = .);
-  } >flash AT>flash 
+  } >prog AT>flash 
 
   .ctors : ALIGN(64 / 8)
   {
@@ -58,7 +58,7 @@ SECTIONS {
     KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .ctors))
     KEEP (*(SORT(.ctors.*)))
     KEEP (*(.ctors))
-  } >flash AT>flash 
+  } >prog AT>flash 
 
   .dtors : ALIGN(64 / 8)
   {
@@ -67,7 +67,7 @@ SECTIONS {
     KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .dtors))
     KEEP (*(SORT(.dtors.*)))
     KEEP (*(.dtors))
-  } >flash AT>flash 
+  } >prog AT>flash 
 
 
   /** Text section | program - can be loaded to faster memory **/
@@ -82,7 +82,7 @@ SECTIONS {
     *(.text .stub .text.* .gnu.linkonce.t.*)
     /* .gnu.warning sections are handled specially by elf.em.  */
     *(.gnu.warning)
-  } >flash AT>flash 
+  } >prog AT>flash 
 
   PROVIDE (__etext = .);
   PROVIDE (_etext = .);
@@ -93,7 +93,7 @@ SECTIONS {
     *(.rdata)
     *(.rodata .rodata.*)
     *(.gnu.linkonce.r.*)
-  } >flash AT>flash 
+  } >prog AT>flash 
 
 
   /* Data section - copied from rom to ram */
@@ -101,7 +101,7 @@ SECTIONS {
   .lalign : ALIGN(64 / 8) 
   {
     PROVIDE( _data_lma = . );
-  } >flash AT>flash  
+  } >prog AT>flash  
 
   .data : ALIGN(64 / 8)    
   {

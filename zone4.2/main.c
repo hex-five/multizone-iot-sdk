@@ -2,21 +2,21 @@
 
 #include <string.h>	// strcmp()
 
-#include "FreeRTOS.h"
-#include "task.h"     /* RTOS task related API prototypes. */
-
 #include "platform.h"
 #include "multizone.h"
 #include "owi_sequence.h"
+
+#include "FreeRTOS.h"
+#include "task.h"     /* RTOS task related API prototypes. */
 
 typedef enum {zone1=1, zone2, zone3, zone4} Zone;
 
 #define SPI_TDI 11 	// in
 #define SPI_TCK 10	// out (master)
 #define SPI_TDO  9  // out
-#define SPI_SYN  8  // out - not used
+//#define SPI_SYN  8  // out - not used
 
-static uint8_t CRC8(const uint8_t const bytes[]){
+static uint8_t CRC8(const uint8_t bytes[]){
 
     const uint8_t generator = 0x1D;
     uint8_t crc = 0;
@@ -36,23 +36,30 @@ static uint8_t CRC8(const uint8_t const bytes[]){
 }
 static uint32_t spi_rw(const uint32_t cmd){
 
-	const uint8_t const bytes[] = {(uint8_t)cmd, (uint8_t)(cmd>>8), (uint8_t)(cmd>>16)};
+    taskENTER_CRITICAL();
+
+	const uint8_t bytes[] = {(uint8_t)cmd, (uint8_t)(cmd>>8), (uint8_t)(cmd>>16)};
 	const uint32_t tx_data = bytes[0]<<24 | bytes[1]<<16 | bytes[2]<<8 | CRC8(bytes);
 
 	uint32_t rx_data = 0;
 
-	for (int i=32-1, bit; i>=0; i--){
+    for (uint32_t i = 1<<31; i != 0; i >>= 1){
 
-		bit = (tx_data >> i) & 1U;
-		GPIO_REG(GPIO_OUTPUT_VAL) = (bit==1 ? GPIO_REG(GPIO_OUTPUT_VAL) | (1 << SPI_TDO) :
-											  GPIO_REG(GPIO_OUTPUT_VAL) & ~(1 << SPI_TDO)  );
+        BITSET(GPIO_BASE+GPIO_OUTPUT_VAL, 1 << SPI_TCK);
 
-		GPIO_REG(GPIO_OUTPUT_VAL) |= (1 << SPI_TCK); volatile int w1=0; while(w1<20) w1++;
-		GPIO_REG(GPIO_OUTPUT_VAL) ^= (1 << SPI_TCK); volatile int w2=0; while(w2<20) w2++;
-		bit = ( GPIO_REG(GPIO_INPUT_VAL) >> SPI_TDI) & 1U;
-		rx_data = ( bit==1 ? rx_data |  (1 << i) : rx_data & ~(1 << i) );
+        if (tx_data & i)
+            BITSET(GPIO_BASE+GPIO_OUTPUT_VAL, 1 << SPI_TDO);
+        else
+            BITCLR(GPIO_BASE+GPIO_OUTPUT_VAL, 1 << SPI_TDO);
 
-	}
+        BITCLR(GPIO_BASE+GPIO_OUTPUT_VAL, 1 << SPI_TCK);
+
+        if( GPIO_REG(GPIO_INPUT_VAL) & (1<< SPI_TDI) )
+            rx_data |= i;
+
+    }
+
+    taskEXIT_CRITICAL();
 
 	return rx_data;
 }
@@ -60,13 +67,14 @@ static uint32_t spi_rw(const uint32_t cmd){
 #define CMD_DUMMY 0xFFFFFF
 #define CMD_STOP  0x000000
 
+static volatile char inbox[2][16] = { {'\0'}, {'\0'}};
 static volatile uint32_t usb_state = 0;
 static volatile uint32_t man_cmd = CMD_STOP;
 
+void msg_handler_task(void *pvParameters); TaskHandle_t msg_handler_task_handle;
 void spi_poll_task(void *pvParameters); TaskHandle_t spi_poll_task_handle;
 void robot_cmd_task(void *pvParameters); TaskHandle_t robot_cmd_task_handle;
 void robot_seq_task(void *pvParameters); TaskHandle_t robot_seq_task_handle;
-void msg_handler_task(void *pvParameters); TaskHandle_t msg_handler_task_handle;
 
 int main (void){
 
@@ -74,17 +82,25 @@ int main (void){
 	//while(1) MZONE_YIELD();
 	//while(1);
 
+    /* Setup hardware */
+    GPIO_REG(GPIO_INPUT_EN)  |= (1 << SPI_TDI);
+    GPIO_REG(GPIO_PULLUP_EN) |= (1 << SPI_TDI);
+    GPIO_REG(GPIO_OUTPUT_EN) |= ((1 << SPI_TCK) | (1<< SPI_TDO) | (1 << LED_RED) | (1 << LED_GRN));
+    GPIO_REG(GPIO_DRIVE)     |= ((1 << SPI_TCK) | (1<< SPI_TDO));
+
+    CSRS(mie, 1<<3); // enable msip/inbox interrupts
+
     /* Create the task. */
 	xTaskCreate(msg_handler_task, "msg_handler_task", configMINIMAL_STACK_SIZE, NULL, 1, &msg_handler_task_handle);
+
+    /* Create the task. */
+	xTaskCreate(spi_poll_task, "spi_poll_task", configMINIMAL_STACK_SIZE, NULL, 0, &spi_poll_task_handle);
 
     /* Create the task. */
 	xTaskCreate(robot_cmd_task, "robot_cmd_task", configMINIMAL_STACK_SIZE, NULL, 1, &robot_cmd_task_handle);
 
     /* Create the task. */
 	xTaskCreate(robot_seq_task, "robot_seq_task", configMINIMAL_STACK_SIZE, NULL, 1, &robot_seq_task_handle);
-
-    /* Create the task. */
-	xTaskCreate(spi_poll_task, "spi_poll_task", configMINIMAL_STACK_SIZE, NULL, 1, &spi_poll_task_handle);
 
     /* Start the tasks and timer running. */
     vTaskStartScheduler();
@@ -98,35 +114,98 @@ int main (void){
 
 }
 
-void spi_poll_task( void *pvParameters ){ // spi_poll_task
-
-	/* Setup hardware */
-	GPIO_REG(GPIO_INPUT_EN)  |= (1 << SPI_TDI);
-	GPIO_REG(GPIO_PULLUP_EN) |= (1 << SPI_TDI);
-	GPIO_REG(GPIO_OUTPUT_EN) |= ((1 << SPI_TCK) | (1<< SPI_TDO) | (1 << LED_RED) | (1 << LED_GRN));
-	GPIO_REG(GPIO_DRIVE)     |= ((1 << SPI_TCK) | (1<< SPI_TDO)) ;
+void msg_handler_task( void *pvParameters ){ // msg_handler_task
 
 	for( ;; ){
 
-	    /* Update USB state & LED
-		rx_data == 0xFFFFFFFF : no spi/usb adapter, robot uknown
-		rx_data == 0x0 : spi/usb adabter on, robot off
-		rx_data == 0xFFFFFFFF : spi/usb adapter on, robot on */
+		vTaskSuspend(NULL); // wait for message
 
-		// Send keep alive packet & read spi */
+		// get a thread-safe copy of inbox[][]
+	    taskENTER_CRITICAL();
+            char in[2][16];
+            memcpy(in, (const char *)inbox, sizeof in);
+            inbox[0][0] = '\0'; inbox[1][0] = '\0';
+        taskEXIT_CRITICAL();
+
+        for (Zone zone = zone1; zone <= zone2; zone++){
+
+            char * const msg = (char *)in[zone-1];
+
+            if (strcmp("ping", msg)==0){
+
+                MZONE_SEND(zone, (char [16]){"pong"});
+
+            } else if (usb_state==0x12670000 && man_cmd==CMD_STOP){
+
+                if (strcmp("stop", msg)==0)
+
+                    owi_sequence_stop_req();
+
+                else if (!owi_sequence_is_running()){
+
+                    if (strcmp("start", msg) == 0) {
+                        owi_sequence_start(MAIN);
+                        vTaskResume(robot_seq_task_handle);
+
+                    } else if (strcmp("fold", msg) == 0) {
+                        owi_sequence_start(FOLD);
+                        vTaskResume(robot_seq_task_handle);
+
+                    } else if (strcmp("unfold", msg) == 0) {
+                        owi_sequence_start(UNFOLD);
+                        vTaskResume(robot_seq_task_handle);
+
+                    } else if (strnlen(msg, sizeof msg)==1){
+
+                        // Manual single-command adjustments
+                        switch (msg[0]){
+                            case 'q' : man_cmd = 0x000001; break; // grip close
+                            case 'a' : man_cmd = 0x000002; break; // grip open
+                            case 'w' : man_cmd = 0x000004; break; // wrist up
+                            case 's' : man_cmd = 0x000008; break; // wrist down
+                            case 'e' : man_cmd = 0x000010; break; // elbow up
+                            case 'd' : man_cmd = 0x000020; break; // elbow down
+                            case 'r' : man_cmd = 0x000040; break; // shoulder up
+                            case 'f' : man_cmd = 0x000080; break; // shoulder down
+                            case 't' : man_cmd = 0x000100; break; // base clockwise
+                            case 'g' : man_cmd = 0x000200; break; // base counterclockwise
+                            case 'y' : man_cmd = 0x010000; break; // light on
+                        }
+
+                        if (man_cmd != CMD_STOP) vTaskResume(robot_cmd_task_handle);
+
+                    }
+
+                }
+
+            }
+
+        }
+
+	}
+
+}
+
+void spi_poll_task( void *pvParameters ){ // spi_poll_task
+
+	for( ;; ){
+
+		/* Send keep alive packet, read spi, update USB state
+		rx_data == 0xFFFFFFFF : no spi/usb adapter, robot uknown
+		rx_data == 0x00000000: spi/usb adabter on, robot off
+		rx_data == 0xFFFFFFFF : spi/usb adapter on, robot on */
 		const uint32_t rx_data = spi_rw(CMD_DUMMY);
 
-		/* Broadcast USB state changes */
+		/* Report USB state changes */
 	    if (rx_data != usb_state){
 
 	    	if (rx_data==0x12670000){
-	    		MZONE_SEND(zone1, "USB ID 12670000"); // remote broker
-	    		MZONE_SEND(zone2, "USB ID 12670000"); // local uart
-
+				MZONE_SEND(zone1, (char [16]){"USB ID 12670000"});
+				MZONE_SEND(zone2, (char [16]){"USB ID 12670000"});
 	    	} else if (usb_state==0x12670000){
-	    		MZONE_SEND(zone1, "USB DISCONNECT"); // remote broker
-	    		MZONE_SEND(zone2, "USB DISCONNECT"); // local uart
 	    		owi_sequence_stop();
+                MZONE_SEND(zone1, (char [16]){"USB DISCONNECT"});
+                MZONE_SEND(zone2, (char [16]){"USB DISCONNECT"});                
 	    	}
 	    }
 
@@ -135,12 +214,15 @@ void spi_poll_task( void *pvParameters ){ // spi_poll_task
 
 	    /* Blink LED */
 	    const int LED = (usb_state==0x12670000 ? LED_GRN : LED_RED);
-	    GPIO_REG(GPIO_OUTPUT_VAL) |= (1<<LED);
-	    vTaskDelay( (TickType_t) 25*configTICK_RATE_HZ/1000 );
-	    GPIO_REG(GPIO_OUTPUT_VAL) &= ~(1<<LED);
+
+	    BITSET(GPIO_BASE+GPIO_OUTPUT_VAL, 1<<LED);
+
+	    vTaskDelay( (TickType_t) (25 / portTICK_PERIOD_MS) );
+
+        BITCLR(GPIO_BASE+GPIO_OUTPUT_VAL, 1<<LED);
 
 	    /* loop approx every 1 sec */
-	    vTaskDelay( (TickType_t) 975*configTICK_RATE_HZ/1000 );
+	    vTaskDelay( (TickType_t) (975 / portTICK_PERIOD_MS) );
 
 	}
 
@@ -150,101 +232,38 @@ void robot_cmd_task( void *pvParameters ){ // robot_cmd_task
 
 	for( ;; ){
 
-		/* manual commands duration is 250ms */
+		vTaskSuspend(NULL);
 
 		spi_rw(man_cmd);
 
-	    vTaskDelay( (TickType_t) 250*configTICK_RATE_HZ/1000 );
+		vTaskDelay( (TickType_t) (200 / portTICK_PERIOD_MS) );
 
 	    spi_rw(man_cmd = CMD_STOP);
 
-		vTaskSuspend(NULL);
 
 	}
 
 }
 
-void robot_seq_task( void *pvParameters ){ // robot_cmd_task
+void robot_seq_task( void *pvParameters ){ // robot_seq_task
 
 	for( ;; ){
+
+        vTaskSuspend(NULL);
+
+        TickType_t xLastWakeTime = xTaskGetTickCount();
 
 		while (usb_state==0x12670000 && owi_sequence_next()!=-1){
 
 			spi_rw(owi_sequence_get_cmd());
 
-			vTaskDelay( (TickType_t) owi_sequence_get_ms()*configTICK_RATE_HZ/1000 );
+            vTaskDelayUntil(&xLastWakeTime, (TickType_t) (owi_sequence_get_ms() / portTICK_PERIOD_MS));
 
 		}
-
-		vTaskSuspend(NULL);
 
 	}
 
 }
-
-void msg_handler_task( void *pvParameters ){ // msg_handler_task
-
-	for( ;; ){
-
-		for (Zone zone = zone1; zone<=zone4; zone++){
-
-			char msg[16]; if (MZONE_RECV(zone, msg)){
-
-				if (strcmp("ping", msg)==0){
-
-					MZONE_SEND(zone, "pong");
-
-				} else if (usb_state==0x12670000 && man_cmd==CMD_STOP){
-
-					if (strcmp("stop", msg)==0) owi_sequence_stop_req();
-
-					else if (!owi_sequence_is_running()){
-
-							 if (strcmp("start", msg)==0) {owi_sequence_start(MAIN);   vTaskResume(robot_seq_task_handle);}
-						else if (strcmp("fold",  msg)==0) {owi_sequence_start(FOLD);   vTaskResume(robot_seq_task_handle);}
-						else if (strcmp("unfold",msg)==0) {owi_sequence_start(UNFOLD); vTaskResume(robot_seq_task_handle);}
-
-						// Manual single-command adjustments
-						else if (strcmp("q", msg)==0) man_cmd = 0x000001; // grip close
-						else if (strcmp("a", msg)==0) man_cmd = 0x000002; // grip open
-						else if (strcmp("w", msg)==0) man_cmd = 0x000004; // wrist up
-						else if (strcmp("s", msg)==0) man_cmd = 0x000008; // wrist down
-						else if (strcmp("e", msg)==0) man_cmd = 0x000010; // elbow up
-						else if (strcmp("d", msg)==0) man_cmd = 0x000020; // elbow down
-						else if (strcmp("r", msg)==0) man_cmd = 0x000040; // shoulder up
-						else if (strcmp("f", msg)==0) man_cmd = 0x000080; // shoulder down
-						else if (strcmp("t", msg)==0) man_cmd = 0x000100; // base clockwise
-						else if (strcmp("g", msg)==0) man_cmd = 0x000200; // base counterclockwise
-						else if (strcmp("y", msg)==0) man_cmd = 0x010000; // light on
-
-						if (man_cmd != CMD_STOP) vTaskResume(robot_cmd_task_handle);
-
-					}
-
-				}
-
-			}
-
-		}
-
-	    taskYIELD();
-
-	}
-
-}
-
-// freertos_risc_v_chip_specific_extensions.h: #define portasmHANDLE_INTERRUPT trap_handler
-void trap_handler(uint32_t cause){
-	taskDISABLE_INTERRUPTS();
-	__asm volatile( "ebreak" );
-	for( ;; );
-}
-
-/*void vApplicationTickHook( void ){
-
-	MZONE_YIELD();
-
-}*/
 
 void vApplicationIdleHook( void ){
 
@@ -257,6 +276,10 @@ void vApplicationIdleHook( void ){
 	see also https://freertos.org/low-power-tickless-rtos.html */
 
 	MZONE_WFI();
+
+	/* MultiZone deep-sleep implementation:
+	set configUSE_TICKLESS_IDLE 1 and configUSE_IDLE_HOOK 0 to enable
+	MultiZone vPortSuppressTicksAndSleep() */
 
 }
 
@@ -274,7 +297,6 @@ void vApplicationMallocFailedHook( void ){
 	provide information on how the remaining heap might be fragmented). */
 
 	taskDISABLE_INTERRUPTS();
-	__asm volatile( "ebreak" );
 	for( ;; );
 }
 
@@ -288,6 +310,38 @@ void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName ){
 	function is called if a stack overflow is detected. */
 
 	taskDISABLE_INTERRUPTS();
-	__asm volatile( "ebreak" );
 	for( ;; );
+}
+
+// freertos_risc_v_chip_specific_extensions.h: #define portasmHANDLE_INTERRUPT trap_handler
+void trap_handler(uint32_t cause){
+
+	switch (cause) {
+
+	case 0x80000003 :	// msip/inbox
+
+		// read incoming messages from zone1 and zone2 & clear msip
+	    ;char msg[16];
+        for (Zone zone = zone1; zone <= zone2; zone++){
+            if (MZONE_RECV(zone, msg))
+                memcpy((char*) &inbox[zone-1][0], msg, sizeof inbox[0]);
+        }
+        MZONE_RECV(zone3, msg); // clear msip - ignore messages from zone3
+        MZONE_RECV(zone4, msg); // clear msip - ignore messages from zone4
+
+		// Resume the suspended task.
+		const BaseType_t xYieldRequired = xTaskResumeFromISR( msg_handler_task_handle );
+
+		// We should switch context so the ISR returns to a different task.
+		portYIELD_FROM_ISR( xYieldRequired );
+
+		break;
+
+	default :
+
+		taskDISABLE_INTERRUPTS();
+		for (;;) ;
+
+	}
+
 }

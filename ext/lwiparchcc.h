@@ -26,5 +26,17 @@ typedef uintptr_t   mem_ptr_t;
 #define S32_F "d"
 #define X32_F "x"
 
+/* Compiler hints for packing structures */
+/*
+#define PACK_STRUCT_FIELD(x)    x
+#define PACK_STRUCT_STRUCT  __attribute__((packed))
+#define PACK_STRUCT_BEGIN
+#define PACK_STRUCT_END
+*/
+
+#define LWIP_RAND() ((u32_t)rand())
+
+#define LWIP_CHKSUM_ALGORITHM 3 /* see src/core/inet_chksum.c */
+
 
 #endif /* __ARCH_CC_H__ */

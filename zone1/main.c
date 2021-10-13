@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include "printf.h"
 
 #include "lwip/dhcp.h"
 #include "lwip/dns.h"
@@ -18,6 +19,7 @@
 #include "queue.h"
 #include "mqtt_config.h"
 #include "mqtt_wrap.h"
+
 
 // ----------------------------------------------------------------------------
 
@@ -78,14 +80,17 @@ int mbedtls_platform_entropy_poll( void *data, unsigned char *output, size_t len
 
 static struct netif netif;
 static struct queue *rx_queue;
+static volatile char inbox[4][16] = { {'\0'}, {'\0'}, {'\0'}, {'\0'} };
+
+typedef enum {zone1=1, zone2, zone3, zone4} Zone;
 
 __attribute__((interrupt())) void trp_handler(void)  { // non maskable traps
 
-	const unsigned long mcause = MZONE_CSRR(CSR_MCAUSE);
+/*  const unsigned long mcause = MZONE_CSRR(CSR_MCAUSE);
 	const unsigned long mepc   = MZONE_CSRR(CSR_MEPC);
 	const unsigned long mtval  = MZONE_CSRR(CSR_MTVAL);
 
-/*	switch(mcause){
+	switch(mcause){
 
 	case 0 : printf("Instruction address missaligned : 0x%08x 0x%08x 0x%08x \n", mcause, mepc, mtval);
 			 break;
@@ -122,20 +127,26 @@ __attribute__((interrupt())) void trp_handler(void)  { // non maskable traps
 
 	default : printf("Exception : 0x%08x 0x%08x 0x%08x \n", mcause, mepc, mtval);
 
-	}*/
+	} */
 
-	asm("1: j 1b"); // TBD restart this zone?
+	for( ;; );
 
 }
 __attribute__((interrupt())) void msi_handler(void)  { // machine software interrupt (3)
-	asm volatile("ebreak");
+
+    for (Zone zone = zone1; zone <= zone4; zone++) {
+        char msg[16];
+        if (MZONE_RECV(zone, msg))
+            memcpy((char*) &inbox[zone-1][0], msg, sizeof inbox[0]);
+    }
+
 }
 __attribute__((interrupt())) void tmr_handler(void)  { // machine timer interrupt (7)
 	 MZONE_WRTIMECMP((uint64_t)-1); // clear mip.7
 }
 __attribute__((interrupt())) void plic_handler(void) { // machine external interrupt (11)
 
-	const uint32_t plic_int = PLIC_REG(PLIC_CLAIM_OFFSET); // PLIC claim
+	const uint32_t plic_int = PLIC_REG(PLIC_CLAIM); // PLIC claim
 
 	struct pbuf *p;
 	// check both rx buffers as they share the same irq
@@ -147,7 +158,7 @@ __attribute__((interrupt())) void plic_handler(void) { // machine external inter
 		}
 	}
 
-	PLIC_REG(PLIC_CLAIM_OFFSET) = plic_int; // PLIC complete
+	PLIC_REG(PLIC_CLAIM) = plic_int; // PLIC complete
 
 }
 
@@ -233,7 +244,7 @@ int main(void) {
 	//while(1) MZONE_YIELD();
 	//while(1);
 
-	// vectored trap handler
+	// setup vectored trap handler
 	static __attribute__ ((aligned(4)))void (*trap_vect[32])(void) = {};
 	trap_vect[0]  = trp_handler;
 	trap_vect[3]  = msi_handler;
@@ -241,13 +252,19 @@ int main(void) {
 	trap_vect[11] = plic_handler;
 	CSRW(mtvec, trap_vect);	CSRS(mtvec, 0x1);
 
-    CSRS(mie, 1<<11); 		// enable external interrupts (PLIC)
-    CSRS(mie, 1<<7); 		// enable timer (TMR)
-    CSRS(mstatus, 1<<3);	// enable global interrupts (PLIC, TMR)
+	// enable msip/inbox interrupt
+    CSRS(mie, 1<<3);
 
-	// Enable XEMACLITE RX IRQ (PLIC Priority 1=lowest 7=highest)
-	PLIC_REG(PLIC_PRI_OFFSET + (PLIC_XEMAC_RX_SOURCE << PLIC_PRI_SHIFT_PER_SOURCE)) = 1;
-	PLIC_REG(PLIC_EN_OFFSET) |= 1 << PLIC_XEMAC_RX_SOURCE;
+	// enable timer interrupt
+    CSRS(mie, 1<<7);
+
+	// enable XEMACLITE RX IRQ (PLIC Priority 1=lowest 7=highest)
+    CSRS(mie, 1<<11);       // enable external interrupts (PLIC/XEMAC)
+	PLIC_REG(PLIC_PRI + (PLIC_SRC_XEMAC << PLIC_SHIFT_PER_SRC)) = 1;
+	PLIC_REG(PLIC_EN) |= 1 << PLIC_SRC_XEMAC;
+
+	// enable global interrupt
+    CSRS(mstatus, 1<<3);
 
 	/* IP Stack Init */
 	lwip_init();
@@ -305,7 +322,8 @@ int main(void) {
 		MZONE_WFI();
 	} sntp_stop();
 	const time_t ut = time(NULL);
-	printf2( "sntp_process: %lu %s", (unsigned long)ut, ctime(&ut));
+    printf2( "sntp_process: %lu   ", (unsigned long)ut            );
+//	printf2( "sntp_process: %lu %s", (unsigned long)ut, ctime(&ut)); // ctime() consumes ~2K flash
 
 	// At this point there should be enough variance to seed the RNG
 	srand( (unsigned)MZONE_CSRR(CSR_MCYCLE) ^ (unsigned)time(NULL) );
@@ -348,7 +366,6 @@ int main(void) {
 				mqtt_connect();
 
 			// Message Router
-			typedef enum {zone1=1, zone2, zone3, zone4} Zone;
 
 			if (mqtt_is_mqtt_connected()){
 
@@ -370,20 +387,29 @@ int main(void) {
 				}
 
 				// outbound: zones => zone1 => broker
-				char msg[16+1]; msg[sizeof(msg)-1]='\0';
                 char topic[strlen(client_id) + strlen("/zone?") +1];
                 strcpy(topic, client_id); strcat(topic, "/zone?");
 
+                CSRC(mie, 1<<3);
+
 				for (Zone zone = zone1; zone<=zone4; zone++){
-					if (MZONE_RECV(zone, msg)) {
+
+				    char * const msg = (char *)inbox[zone-1];
+
+			        if (*msg != '\0') {
 
                         // forward to broker if not consumed by zone1
                         if (msg_handler (zone, msg) == 0) {
 							topic[strlen(topic)-1] = (char)('0'+zone);
 							mqtt_wrap_publish(topic, msg);
 						}
+
+                        *msg = '\0';
 					}
+
 				}
+
+                CSRS(mie, 1<<3);
 			}
 
 		}

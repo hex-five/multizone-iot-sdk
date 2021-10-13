@@ -8,7 +8,7 @@
     <booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.doSecondReset" value="true"/>
     <booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.doStartGdbCLient" value="true"/>
     <booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.doStartGdbServer" value="true"/>
-    <booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.enableSemihosting" value="true"/>
+    <booleanAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.enableSemihosting" value="false"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.firstResetType" value="init"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.gdbClientOtherCommands" value="set mem inaccessible-by-default off"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.gdbClientOtherOptions" value=""/>
@@ -19,7 +19,7 @@
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.gdbServerOther" value="-f ./bsp/X300/openocd.cfg"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.gdbServerTclPortNumber" value="6666"/>
     <intAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.gdbServerTelnetPortNumber" value="4444"/>
-    <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.otherInitCommands" value="add-symbol-file ${workspace_loc:/hexfive-kern}/build/${config_name:multizone-iot-sdk}/kernel.elf&#10;add-symbol-file ${workspace_loc:/multizone-iot-sdk}/bsp/${config_name:multizone-iot-sdk}/boot/boot.elf &#10;add-symbol-file ${workspace_loc:/multizone-iot-sdk}/zone1/zone1.elf&#10;add-symbol-file ${workspace_loc:/multizone-iot-sdk}/zone2/zone2.elf&#10;add-symbol-file ${workspace_loc:/multizone-iot-sdk}/zone3/zone3.elf&#10;add-symbol-file ${workspace_loc:/multizone-iot-sdk}/zone4/zone4.elf"/>
+    <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.otherInitCommands" value="add-symbol-file ${workspace_loc:/multizone-iot-sdk}/bsp/${config_name:multizone-iot-sdk}/boot/boot.elf &#10;add-symbol-file ${workspace_loc:/multizone-iot-sdk}/zone1/zone1.elf&#10;add-symbol-file ${workspace_loc:/multizone-iot-sdk}/zone2/zone2.elf&#10;add-symbol-file ${workspace_loc:/multizone-iot-sdk}/zone3/zone3.elf&#10;add-symbol-file ${workspace_loc:/multizone-iot-sdk}/zone4/zone4.elf"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.otherRunCommands" value=""/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.openocd.secondResetType" value="halt"/>
     <stringAttribute key="ilg.gnumcueclipse.debug.gdbjtag.svdPath" value=""/>
@@ -48,7 +48,7 @@
     <stringAttribute key="org.eclipse.cdt.launch.COREFILE_PATH" value=""/>
     <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="zone1/zone1.elf"/>
     <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="multizone-iot-sdk"/>
-    <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="true"/>
+    <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
     <stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="cdt.managedbuild.toolchain.gnu.cross.base.1316478169"/>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
         <listEntry value="/multizone-iot-sdk"/>

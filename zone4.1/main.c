@@ -4,19 +4,18 @@
 
 #include "platform.h"
 #include "multizone.h"
-
 #include "owi_sequence.h"
 
 #define SPI_TDI 11 	// in
 #define SPI_TCK 10	// out (master)
 #define SPI_TDO  9  // out
-#define SPI_SYN  8  // out - not used
+//#define SPI_SYN  8  // out - not used
 
-#define MAN_CMD_TIME 250*RTC_FREQ/1000 // 250ms
-#define KEEP_ALIVE_TIME 1*RTC_FREQ // 1 sec
-#define LED_TIME 20*RTC_FREQ/1000 //  20ms
+#define MAN_CMD_TIME RTC_FREQ/1000*200 // 200ms
+#define KEEP_ALIVE_TIME 1*RTC_FREQ     // 1 sec
+#define LED_TIME RTC_FREQ/1000*20      //  20ms
 
-static uint8_t CRC8(const uint8_t const bytes[]){
+static uint8_t CRC8(const uint8_t bytes[]){
 
     const uint8_t generator = 0x1D;
     uint8_t crc = 0;
@@ -36,30 +35,34 @@ static uint8_t CRC8(const uint8_t const bytes[]){
 }
 static uint32_t spi_rw(const uint32_t cmd){
 
-	const uint8_t const bytes[] = {(uint8_t)cmd, (uint8_t)(cmd>>8), (uint8_t)(cmd>>16)};
+	const uint8_t bytes[] = {(uint8_t)cmd, (uint8_t)(cmd>>8), (uint8_t)(cmd>>16)};
 	const uint32_t tx_data = bytes[0]<<24 | bytes[1]<<16 | bytes[2]<<8 | CRC8(bytes);
 
 	uint32_t rx_data = 0;
 
-	for (int i=32-1, bit; i>=0; i--){
+    for (uint32_t i = 1<<31; i != 0; i >>= 1){
 
-		bit = (tx_data >> i) & 1U;
-		GPIO_REG(GPIO_OUTPUT_VAL) = (bit==1 ? GPIO_REG(GPIO_OUTPUT_VAL) | (1 << SPI_TDO) :
-											  GPIO_REG(GPIO_OUTPUT_VAL) & ~(1 << SPI_TDO)  );
+        BITSET(GPIO_BASE+GPIO_OUTPUT_VAL, 1 << SPI_TCK);
 
-		GPIO_REG(GPIO_OUTPUT_VAL) |= (1 << SPI_TCK); volatile int w1=0; while(w1<5) w1++;
-		GPIO_REG(GPIO_OUTPUT_VAL) ^= (1 << SPI_TCK); volatile int w2=0; while(w2<5) w2++;
-		bit = ( GPIO_REG(GPIO_INPUT_VAL) >> SPI_TDI) & 1U;
-		rx_data = ( bit==1 ? rx_data |  (1 << i) : rx_data & ~(1 << i) );
+        if (tx_data & i)
+            BITSET(GPIO_BASE+GPIO_OUTPUT_VAL, 1 << SPI_TDO);
+        else
+            BITCLR(GPIO_BASE+GPIO_OUTPUT_VAL, 1 << SPI_TDO);
 
-	}
+        BITCLR(GPIO_BASE+GPIO_OUTPUT_VAL, 1 << SPI_TCK);
 
+        if( GPIO_REG(GPIO_INPUT_VAL) & (1<< SPI_TDI) )
+            rx_data |= i;
+
+    }
+    
 	return rx_data;
 }
 
 #define CMD_DUMMY 0xFFFFFF
 #define CMD_STOP  0x000000
 
+static volatile char inbox[4][16] = { {'\0'}, {'\0'}, {'\0'}, {'\0'} };
 static volatile uint32_t usb_state = 0;
 static volatile uint32_t man_cmd = CMD_STOP;
 static volatile int LED = LED_RED;
@@ -73,8 +76,8 @@ typedef enum {
 	LED_OFF_TASK
 } Task;
 
-uint64_t robot_seq_task(); 	// OWI preprogrammed sequence
-uint64_t robot_cmd_task(); 	// Manual adjustment cmd stop
+uint64_t robot_seq_task(); 	// OWI sequence
+uint64_t robot_cmd_task(); 	// Manual cmd stop
 uint64_t keep_alive_task(); // Keep alive
 uint64_t led_off_task(); 	// LED off
 
@@ -92,7 +95,7 @@ void timer_set(const Task task, const uint64_t timecmp){
 	timer[task].timecmp = timecmp;
 
 	uint64_t timecmp_min = UINT64_MAX;
-	for (int i=0; i<sizeof(timer)/sizeof(timer[0]); i++)
+	for (size_t i=0; i<sizeof(timer)/sizeof(timer[0]); i++)
 		timecmp_min = timer[i].timecmp < timecmp_min ? timer[i].timecmp : timecmp_min;
 
 	MZONE_WRTIMECMP(timecmp_min);
@@ -100,7 +103,7 @@ void timer_set(const Task task, const uint64_t timecmp){
 }
 void timer_handler(const uint64_t time){
 
-	for (int i=0; i<sizeof(timer)/sizeof(timer[0]); i++)
+	for (size_t i=0; i<sizeof(timer)/sizeof(timer[0]); i++)
 
 		if(time >= timer[i].timecmp){
 			timer_set(i, timer[i].task());
@@ -138,12 +141,12 @@ uint64_t keep_alive_task(){ // Keep alive 1sec
     if (rx_data != usb_state){
     	if (rx_data==0x12670000){
     		LED = LED_GRN;
-    		MZONE_SEND(zone1, "USB ID 12670000"); // remote broker
-    		MZONE_SEND(zone2, "USB ID 12670000"); // local uart
+    		MZONE_SEND(zone1, (char[16]){"USB ID 12670000"}); // remote broker
+    		MZONE_SEND(zone2, (char[16]){"USB ID 12670000"}); // local uart
     	} else if (usb_state==0x12670000){
     		LED = LED_RED;
-    		MZONE_SEND(zone1, "USB DISCONNECT"); // remote broker
-    		MZONE_SEND(zone2, "USB DISCONNECT"); // local uart
+    		MZONE_SEND(zone1, (char[16]){"USB DISCONNECT"}); // remote broker
+    		MZONE_SEND(zone2, (char[16]){"USB DISCONNECT"}); // local uart
     		owi_sequence_stop();
     	}
     	usb_state=rx_data;
@@ -152,17 +155,19 @@ uint64_t keep_alive_task(){ // Keep alive 1sec
 	const uint64_t time = MZONE_RDTIME();
 
     // Turn on LED & start LED timer
-    GPIO_REG(GPIO_OUTPUT_VAL) |= (1<<LED);
+	BITSET(GPIO_BASE+GPIO_OUTPUT_VAL, 1<<LED);
     timer_set(LED_OFF_TASK, time + LED_TIME);
 
 	return time + KEEP_ALIVE_TIME;
 }
 uint64_t led_off_task(){ // LED off
-	GPIO_REG(GPIO_OUTPUT_VAL) &= ~(1<<LED);
+    BITCLR(GPIO_BASE+GPIO_OUTPUT_VAL, 1<<LED);
 	return UINT64_MAX;
 }
 
-__attribute__(( interrupt(), aligned(4) )) void trap_handler(void){
+__attribute__(( interrupt())) void trap_handler(void){
+
+	#define IRQ ( 1UL<< (__riscv_xlen-1) )
 
 	switch(MZONE_CSRR(CSR_MCAUSE)){
 		case 0 : break; // Instruction address misaligned
@@ -174,16 +179,27 @@ __attribute__(( interrupt(), aligned(4) )) void trap_handler(void){
 		case 7 : break; // Store access fault
 		case 8 : break; // Environment call from U-mode
 
-		case 0x80000007 : timer_handler(MZONE_RDTIME()); break; // Muliplexed timer
+		case IRQ | 3 :  // Software interrupt (inbox)
+            for (Zone zone = zone1; zone <= zone4; zone++) {
+                char msg[16];
+                if (MZONE_RECV(zone, msg))
+                    memcpy((char*) &inbox[zone-1][0], msg, sizeof inbox[0]);
+            }
+            return;
+
+		case IRQ | 7 :  // Muliplexed timer
+			timer_handler(MZONE_RDTIME());
+			return;
 
 	}
+
+	for( ;; );
 
 }
 
 void msg_handler(const Zone zone, const char *msg){
 
 	if (strcmp("ping", msg)==0){
-
 		MZONE_SEND(zone, "pong");
 
 	} else if (usb_state==0x12670000 && man_cmd==CMD_STOP){
@@ -222,12 +238,17 @@ void msg_handler(const Zone zone, const char *msg){
 
 int main (void){
 
-	GPIO_REG(GPIO_INPUT_EN)  |= (1 << SPI_TDI);
-	GPIO_REG(GPIO_PULLUP_EN) |= (1 << SPI_TDI);
-	GPIO_REG(GPIO_OUTPUT_EN) |= ((1 << SPI_TCK) | (1<< SPI_TDO) | (1 << LED_RED) | (1 << LED_GRN));
-    GPIO_REG(GPIO_DRIVE)     |= ((1 << SPI_TCK) | (1<< SPI_TDO)) ;
+	//while(1) MZONE_WFI();
+	//while(1) MZONE_YIELD();
+	//while(1);
+
+	GPIO_REG(GPIO_INPUT_EN)  |=  (1 << SPI_TDI);
+	GPIO_REG(GPIO_PULLUP_EN) |=  (1 << SPI_TDI);
+	GPIO_REG(GPIO_OUTPUT_EN) |=  (1 << SPI_TCK | 1<< SPI_TDO | 1 << LED_RED | 1 << LED_GRN );
+    GPIO_REG(GPIO_DRIVE)     |=  (1 << SPI_TCK | 1<< SPI_TDO );
 
 	CSRW(mtvec, trap_handler);  	// register trap handler
+	CSRS(mie, 1<<3);    		// enable msip/inbox interrupt
 	CSRS(mie, 1<<7); 				// enable timer interrupts
     CSRS(mstatus, 1<<3);			// enable global interrupts
 
@@ -237,12 +258,20 @@ int main (void){
 	while(1){
 
 		// Message handler
+		CSRC(mie, 1 << 3);
 		for (Zone zone = zone1; zone<=zone4; zone++){
 
-			char msg[16]; if (MZONE_RECV(zone, msg)) msg_handler(zone, msg);
+            char * const msg = (char *)inbox[zone-1];
+		
+			if (*msg != '\0') {
+				msg_handler(zone, msg);
+				*msg = '\0';
+			}
 
 		}
+		CSRS(mie, 1 << 3);
 
+		// wait for next message
 	    MZONE_WFI();
 
 	}

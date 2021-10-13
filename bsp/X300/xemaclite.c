@@ -60,7 +60,7 @@ static uint8_t low_level_link_state(){
 	#define PHY_STATUS_REG 			0x01
 	#define PHY_STATUS_LINK_MASK 	0x0004
 
-	while( (*(volatile uint32_t *)(XEMAC_BASE + XEMAC_MDIOCTRL_OFF)) & XEMAC_MDIOCTRL_STATUS_MASK !=0);
+	while( ((*(volatile uint32_t *)(XEMAC_BASE + XEMAC_MDIOCTRL_OFF)) & XEMAC_MDIOCTRL_STATUS_MASK) !=0);
 
 	*(volatile uint32_t *)(XEMAC_BASE + XEMAC_MDIOADDR_OFF) =
 			(XEMAC_MDIOADDR_OP_MASK | (PHY_DEV << XEMAC_MDIOADDR_PHYDEV_SHFT) | PHY_STATUS_REG);
@@ -69,7 +69,7 @@ static uint8_t low_level_link_state(){
 
 	*(volatile uint32_t *)(XEMAC_BASE + XEMAC_MDIOCTRL_OFF) = (mdioctrl | XEMAC_MDIOCTRL_ENABLE_MASK | XEMAC_MDIOCTRL_STATUS_MASK);
 
-	while( (*(volatile uint32_t *)(XEMAC_BASE + XEMAC_MDIOCTRL_OFF)) & XEMAC_MDIOCTRL_STATUS_MASK !=0);
+	while( ((*(volatile uint32_t *)(XEMAC_BASE + XEMAC_MDIOCTRL_OFF)) & XEMAC_MDIOCTRL_STATUS_MASK) !=0);
 
 	return (*(volatile uint32_t *)(XEMAC_BASE + XEMAC_MDIORD_OFF) & PHY_STATUS_LINK_MASK);
 

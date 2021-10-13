@@ -17,6 +17,9 @@
 #define LD1_GRN_OFF PWM_REG(PWM_CMP2)  = 0xFF;
 #define LD1_BLU_OFF PWM_REG(PWM_CMP3)  = 0xFF;
 
+typedef enum {zone1=1, zone2, zone3, zone4} Zone;
+static volatile char inbox[4][16] = { {'\0'}, {'\0'}, {'\0'}, {'\0'} };
+
 __attribute__((interrupt())) void trp_handler(void)	 { // trap handler (0)
 
 	asm volatile("ebreak");
@@ -36,7 +39,13 @@ __attribute__((interrupt())) void trp_handler(void)	 { // trap handler (0)
 
 }
 __attribute__((interrupt())) void msi_handler(void)  { // machine software interrupt (3)
-	asm volatile("ebreak");
+
+    for (Zone zone = zone1; zone <= zone4; zone++) {
+        char msg[16];
+        if (MZONE_RECV(zone, msg))
+            memcpy((char*) &inbox[zone-1][0], msg, sizeof inbox[0]);
+    }
+
 }
 __attribute__((interrupt())) void tmr_handler(void)  { // machine timer interrupt (7)
 
@@ -177,34 +186,40 @@ int main (void){
 	b1_irq_init();
 	b2_irq_init();
 
-    // set & enable timer
+    // enable msip/inbox interrupt
+    CSRS(mie, 1<<3);
+
+    // set timer & enable interrupt
 	MZONE_ADTIMECMP((uint64_t)25*RTC_FREQ/1000);
     CSRS(mie, 1<<7);
 
     // enable global interrupts (BTN0, BTN1, BTN2, TMR)
     CSRS(mstatus, 1<<3);
 
-    typedef enum {zone1=1, zone2, zone3, zone4} Zone;
-
 	while(1){
 
 		// Message handler
+	    CSRC(mie, 1<<3);
 		for (Zone zone = zone1; zone<=zone4; zone++){
 
-			char msg[16]; if (MZONE_RECV(zone, msg)) {
+		    char * const msg = (char *)inbox[zone-1];
+
+		    if (*msg != '\0') {
 
 				if (strcmp("ping", msg)==0) MZONE_SEND(zone, "pong");
 				else if (strcmp("mie=0", msg)==0) CSRC(mstatus, 1<<3);
 				else if (strcmp("mie=1", msg)==0) CSRS(mstatus, 1<<3);
 				else if (strcmp("block", msg)==0) {
-					CSRC(mstatus, 1<<3);
-					while(1); /* (!MZONE_RECV(zone, msg));
-					CSRS(mstatus, 1<<3); */
+				    CSRC(mstatus, 1<<3);
+				    for(;;);
 				}
+
+				*msg = '\0';
 
 			}
 
 		}
+        CSRS(mie, 1<<3);
 
 		MZONE_WFI();
 

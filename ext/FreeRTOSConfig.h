@@ -7,17 +7,22 @@
 your application. */
 #include "platform.h"
 
+/* MultiZone deep-sleep implementation:
+set configUSE_TICKLESS_IDLE 1 and configUSE_IDLE_HOOK 0 to enable
+MultiZone vPortSuppressTicksAndSleep() */
+
 #define configISR_STACK_SIZE_WORDS 		(100)
 #define configMTIME_BASE_ADDRESS		( CLINT_BASE + CLINT_MTIME )
 #define configMTIMECMP_BASE_ADDRESS		( CLINT_BASE + CLINT_MTIMECMP )
 
 #define configUSE_PREEMPTION                    1
+#define configLIST_VOLATILE                     volatile
 // #define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 #define configUSE_TICKLESS_IDLE                 0
-#define configCPU_CLOCK_HZ                      RTC_FREQ
+#define configCPU_CLOCK_HZ                      ( (TickType_t) RTC_FREQ )
 #define configTICK_RATE_HZ                      ( (TickType_t) 1000 )
-#define configMAX_PRIORITIES                    4 	//5
-#define configMINIMAL_STACK_SIZE                100 //128
+#define configMAX_PRIORITIES                    2
+#define configMINIMAL_STACK_SIZE                100
 // #define configMAX_TASK_NAME_LEN                 16
 #define configUSE_16_BIT_TICKS                  0
 // #define configIDLE_SHOULD_YIELD                 1
@@ -44,8 +49,8 @@ your application. */
 /* Hook function related definitions. */
 #define configUSE_IDLE_HOOK                     1
 #define configUSE_TICK_HOOK                     0
-#define configCHECK_FOR_STACK_OVERFLOW          2
-#define configUSE_MALLOC_FAILED_HOOK            1
+#define configCHECK_FOR_STACK_OVERFLOW          0 //2
+#define configUSE_MALLOC_FAILED_HOOK            0 //1
 // #define configUSE_DAEMON_TASK_STARTUP_HOOK      0
 
 /* Run time and task stats gathering related definitions. */
@@ -61,16 +66,16 @@ your application. */
 
 /* Define to trap errors during development. */
 // #define configASSERT( ( x ) ) if( ( x ) == 0 ) vAssertCalled( __FILE__, __LINE__ )
-#define configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); __asm volatile( "ebreak" ); for( ;; ); }
+//#define configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); __asm volatile( "ebreak" ); for( ;; ); }
 
 /* Optional functions - most linkers will remove unused functions anyway. */
 // #define INCLUDE_vTaskPrioritySet                1
 // #define INCLUDE_uxTaskPriorityGet               1
 // #define INCLUDE_vTaskDelete                     1
-#define INCLUDE_vTaskSuspend                    1
-// #define INCLUDE_xResumeFromISR                  1
-// #define INCLUDE_vTaskDelayUntil                 1
-#define INCLUDE_vTaskDelay                      1
+#define INCLUDE_vTaskSuspend						1
+#define INCLUDE_xResumeFromISR						1
+#define INCLUDE_vTaskDelayUntil   					1
+#define INCLUDE_vTaskDelay							1
 // #define INCLUDE_xTaskGetSchedulerState          1
 // #define INCLUDE_xTaskGetCurrentTaskHandle       1
 // #define INCLUDE_uxTaskGetStackHighWaterMark     0

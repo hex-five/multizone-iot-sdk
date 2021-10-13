@@ -1,0 +1,11 @@
+/* Copyright(C) 2020 Hex Five Security, Inc. - All Rights Reserved */
+
+#ifndef PRINTF_CONFIG_H
+#define PRINTF_CONFIG_H
+
+#define PRINTF_DISABLE_SUPPORT_FLOAT
+#define PRINTF_DISABLE_SUPPORT_EXPONENTIAL
+#define PRINTF_DISABLE_SUPPORT_LONG_LONG
+#define PRINTF_DISABLE_SUPPORT_PTRDIFF_T
+
+#endif  // PRINTF_CONFIG_H

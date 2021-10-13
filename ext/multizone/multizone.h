@@ -10,8 +10,8 @@
 #define mzone ".word 0x00300073;"
 
 /* Thread Management */
-#define MZONE_YIELD() asm volatile ("li a0, 0;" mzone : : : "a0");
-#define MZONE_WFI()   asm volatile ("li a0, 1;" mzone : : : "a0");
+#define MZONE_YIELD() asm volatile ("li a0, 0;" mzone : : : "a0")
+#define MZONE_WFI()   asm volatile ("li a0, 1;" mzone : : : "a0")
 
 /* Secure Messaging */
 #if __riscv_xlen==32
@@ -88,12 +88,12 @@
 	#define MZONE_WRTIMECMP(val) \
 		asm volatile ( \
 		"mv a1, %0; mv a2, %1;" \
-		"li a0, 6;" mzone : : "r"((uint32_t)val), "r"((uint32_t)((uint64_t)val>>32)) : "a0", "a1", "a2" );
+		"li a0, 6;" mzone : : "r" ((uint32_t)val), "r"((uint32_t)(((uint64_t)val)>>32)) : "a0", "a1", "a2" );
 
 	#define MZONE_ADTIMECMP(val) \
 		asm volatile ( \
 		"mv a1, %0; mv a2, %1;" \
-		"li a0, 7;" mzone : : "r"((uint32_t)val), "r"((uint32_t)((uint64_t)val>>32)) : "a0", "a1", "a2" );
+		"li a0, 7;" mzone : : "r" ((uint32_t)val), "r"((uint32_t)(((uint64_t)val)>>32)) : "a0", "a1", "a2" );
 
 #else
 
@@ -159,11 +159,10 @@
 
 #define CSR_MHPMCOUNTER26 	21 // kernel irq lat cycle min
 #define CSR_MHPMCOUNTER27 	22 // kernel irq lat cycle max
-//                          23 //
-#define CSR_MHPMCOUNTER28 	24 // kernel ctx sw instr min
-#define CSR_MHPMCOUNTER29 	25 // kernel ctx sw instr max
-#define CSR_MHPMCOUNTER30 	26 // kernel ctx sw cycle min
-#define CSR_MHPMCOUNTER31 	27 // kernel ctx sw cycle max
+#define CSR_MHPMCOUNTER28 	23 // kernel ctx sw instr min
+#define CSR_MHPMCOUNTER29 	24 // kernel ctx sw instr max
+#define CSR_MHPMCOUNTER30 	25 // kernel ctx sw cycle min
+#define CSR_MHPMCOUNTER31 	26 // kernel ctx sw cycle max
 
 
 /* Privileged Pseudoinstructions */
@@ -203,5 +202,22 @@
 	rd; \
 })
 
+
+/* Atomic Memory Operations */
+#define BITSET(mem_addr, bit_mask) ({ \
+    register const uint32_t rs1 = mem_addr; \
+    register const uint32_t rs2 = bit_mask; \
+    asm volatile ( "amoor.w x0, %0, (%1)" : : "r"(rs2), "r"(rs1) : "memory" ); \
+})
+#define BITCLR(mem_addr, bit_mask) ({ \
+    register const uint32_t rs1 = mem_addr; \
+    register const uint32_t rs2 = ~(bit_mask); \
+    asm volatile ( "amoand.w x0, %0, (%1)" : : "r"(rs2), "r"(rs1) : "memory" ); \
+})
+#define BITINV(mem_addr, bit_mask) ({ \
+    register const uint32_t rs1 = mem_addr; \
+    register const uint32_t rs2 = bit_mask; \
+    asm volatile ( "amoxor.w x0, %0, (%1)" : : "r"(rs2), "r"(rs1) : "memory" ); \
+})
 
 #endif /* MULTIZONE_H */

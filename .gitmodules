@@ -10,3 +10,6 @@
 	path = ext/freertos
 	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
 	ignore = dirty
+[submodule "ext/printf"]
+	path = ext/printf
+	url = git@github.com:mpaland/printf.git

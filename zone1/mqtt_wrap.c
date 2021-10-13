@@ -1,6 +1,7 @@
 /* Copyright(C) 2020 Hex Five Security, Inc. - All Rights Reserved */
 
 #include <string.h> // memset()
+#include "printf.h"
 
 #include "lwip/opt.h"
 #include "lwip/err.h"
@@ -76,7 +77,7 @@ static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t f
 	  //printf("mqtt_incoming_data_cb:  %.*s \n", len, data); // no \0 term
 
 		if (inbox_id && strlen(inbox[inbox_id-1])==0){
-			strncpy(inbox[inbox_id-1], data, MIN(len,16));
+			strncpy(inbox[inbox_id-1], (const char *)data, MIN(len,16));
 			inbox[inbox_id-1][MIN(len,16-1)]='\0';
 		}
 
@@ -122,7 +123,7 @@ static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection
 		//err_t err = mqtt_subscribe(client, topic, MQTT_QOS, mqtt_sub_request_cb, arg);
 		err_t err = mqtt_subscribe(client, topic, MQTT_QOS, NULL, arg);
 
-		//if (err != ERR_OK) printf("mqtt_subscribe return: %d\n", err);
+		if (err != ERR_OK) printf("mqtt_subscribe return: %d\n", err);
 
 	} else {
 
@@ -191,7 +192,7 @@ void mqtt_connect() {
 	err_t err = mqtt_client_connect(&client, &broker_ip, MQTT_BROKER_PORT, mqtt_connection_cb, NULL, &ci);
 
 	/* For now just print the result code if something goes wrong */
-	//if (err != ERR_OK)	printf("mqtt_connect return %d\n", err);
+	if (err != ERR_OK)	printf("mqtt_connect return %d\n", err);
 
 }
 
@@ -202,7 +203,7 @@ void mqtt_wrap_publish(char *pub_topic, char *pub_payload) {
 							 NULL, //mqtt_pub_request_cb,
 							 NULL);
 
-	//if (err != ERR_OK) printf("Publish err: %d\n", err);
+	if (err != ERR_OK) printf("Publish err: %d\n", err);
 
 }
 

@@ -5,6 +5,8 @@
 
 int main (void){
 
+    CSRS(mie, 1<<3);
+
 	while(1){
 
 		MZONE_WFI();
