@@ -25,6 +25,16 @@ The Arty FPGA Evaluation Kit requires the following open source softcore:
 
 For instructions on how to upload the bitstream to the ARTY board and how to connect the [Olimex debug head ARM-USB-TINY-H](https://www.olimex.com/Products/ARM/JTAG/ARM-USB-TINY-H/) see [Arty FPGA Dev Kit Getting Started Guide](https://sifive.cdn.prismic.io/sifive%2Fed96de35-065f-474c-a432-9f6a364af9c8_sifive-e310-arty-gettingstarted-v1.0.6.pdf)
 
+### Quick Start ###
+
+Prebuilt fpga bitstreams including the X300 RISC-V SoC and the MultiZone Trusted Firmware are provided as release assets ready to go:
+
+- [multizone-iot-sdk-arty-35t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.1/multizone-iot-sdk-arty-35t.mcs)
+
+- [multizone-iot-sdk-arty-100t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.1/multizone-iot-sdk-arty-100t.mcs)
+
+If you are impatient to run the MultiZone Trusted Firmware demo, just upload the right bitstream to your Arty board and skip all steps below. For this you only need [Xilinx Vivado Lab](https://www.xilinx.com/support/download.html) an the instructions at https://github.com/hex-five/multizone-fpga#readme 
+
 
 ### Installation ###
 
