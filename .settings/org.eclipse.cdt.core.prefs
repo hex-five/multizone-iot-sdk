@@ -12,7 +12,7 @@ environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1316478169/OPENOCD
 environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1316478169/OPENOCD/value=${HOME}/riscv-openocd-20210807
 environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1316478169/PATH/delimiter=\:
 environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1316478169/PATH/operation=replace
-environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1316478169/PATH/value=/bin\:/usr/local/bin\:/usr/bin\:${RISCV}/bin
+environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1316478169/PATH/value=${PATH}\:${RISCV}/bin
 environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1316478169/RISCV/delimiter=\:
 environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1316478169/RISCV/operation=replace
 environment/project/cdt.managedbuild.toolchain.gnu.cross.base.1316478169/RISCV/value=${HOME}/riscv-gnu-toolchain-20210618
