@@ -113,8 +113,8 @@ Assign one of these values to the BOARD variable - default is X300.
 
 ```
 cd ~/multizone-iot-sdk
-export RISCV=~/riscv-gnu-toolchain-20200613
-export OPENOCD=~/riscv-openocd-20200613
+export RISCV=~/riscv-gnu-toolchain-20210618
+export OPENOCD=~/riscv-openocd-20210807
 export BOARD=X300
 make 
 make load
