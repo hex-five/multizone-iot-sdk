@@ -180,7 +180,6 @@ void print_sys_info(void) {
 		printf("RTC clock     : %d MHz \n", (int)(RTC_FREQ/1E+6) );
 
 	// Platform info
-
 	printf(" \n");
 
 #ifdef PLIC_BASE

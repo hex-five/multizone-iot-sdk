@@ -84,6 +84,8 @@ static volatile char inbox[4][16] = { {'\0'}, {'\0'}, {'\0'}, {'\0'} };
 
 typedef enum {zone1=1, zone2, zone3, zone4} Zone;
 
+// ----------------------------------------------------------------------------
+static void (*trap_vect[__riscv_xlen])(void) = {};
 __attribute__((interrupt())) void trp_handler(void)  { // non maskable traps
 
 /*  const unsigned long mcause = MZONE_CSRR(CSR_MCAUSE);
@@ -238,6 +240,7 @@ static void lwip_thread(){
 
 }
 
+// ----------------------------------------------------------------------------
 int main(void) {
 
 	//while(1) MZONE_WFI();
@@ -245,7 +248,6 @@ int main(void) {
 	//while(1);
 
 	// setup vectored trap handler
-	static __attribute__ ((aligned(4)))void (*trap_vect[32])(void) = {};
 	trap_vect[0]  = trp_handler;
 	trap_vect[3]  = msi_handler;
 	trap_vect[7]  = tmr_handler;

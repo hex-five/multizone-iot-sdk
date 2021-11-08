@@ -20,6 +20,8 @@
 typedef enum {zone1=1, zone2, zone3, zone4} Zone;
 static volatile char inbox[4][16] = { {'\0'}, {'\0'}, {'\0'}, {'\0'} };
 
+// ----------------------------------------------------------------------------
+static void (*trap_vect[__riscv_xlen])(void) = {};
 __attribute__((interrupt())) void trp_handler(void)	 { // trap handler (0)
 
 	asm volatile("ebreak");
@@ -65,7 +67,6 @@ __attribute__((interrupt())) void tmr_handler(void)  { // machine timer interrup
 	MZONE_ADTIMECMP((uint64_t)25*RTC_FREQ/1000);
 
 }
-
 __attribute__((interrupt())) void btn0_handler(void) {
 
 	static uint64_t debounce = 0;
@@ -162,6 +163,7 @@ void b2_irq_init()  {
     CSRS(mie, 1<<(BTN2_IRQ));
 }
 
+// ----------------------------------------------------------------------------
 int main (void){
 
 	//while(1) MZONE_WFI();
@@ -169,7 +171,6 @@ int main (void){
 	//while(1);
 
 	// vectored trap handler
-	static __attribute__ ((aligned(4)))void (*trap_vect[32])(void) = {};
 	trap_vect[0] = trp_handler;
 	trap_vect[3] = msi_handler;
 	trap_vect[7] = tmr_handler;
