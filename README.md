@@ -453,6 +453,6 @@ _Note:_ For a complete explanation of the functionality of each zone/application
 
 Please remember that export/import and/or use of strong cryptography software, providing cryptography hooks, or even just communicating technical details about cryptography software is illegal in some parts of the world. So when you import this software to your country, re-distribute it from there or even just email technical suggestions or even source patches to the authors or other people you are strongly advised to pay close attention to any laws or regulations which apply to you. Hex Five Security, Inc. and the authors of the software included in this repository are not liable for any violations you make here. So be careful, it is your responsibility.
 
-MultiZone and HEX-Five are registered trademarks of Hex Five Security, Inc.
+_MultiZone and HEX-Five are registered trademarks of Hex Five Security, Inc._
 
-MultiZone technology is protected by patents US 16450826 and PCT US1938774.
+_MultiZone technology is protected by patents US 11,151,262 and PCT/US2019/038774_
