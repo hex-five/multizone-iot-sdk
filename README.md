@@ -1,23 +1,24 @@
 # multizone-iot-sdk
 
-The MultiZone® IoT Firmware is the quick and safe way to build secure IoT applications with any RISC-V processor. It provides secure access to commercial and private IoT clouds, real-time monitoring, secure boot, and remote firmware updates. The built-in Trusted Execution Environment provides hardware-enforced separation to shield the execution of trusted applications from untrusted 3rd party libraries.
+MultiZone® Trusted Firmware is the quick and safe way to build secure IoT applications with any RISC-V processor. It provides secure access to commercial and private IoT clouds, real-time monitoring, secure boot, and remote firmware updates. The built-in Trusted Execution Environment provides hardware-enforced separation to shield the execution of trusted applications from untrusted 3rd party libraries.
 
 Complete IoT firmware optimized for RISC-V processors:
 
 - Provides secure access to any IoT clouds, secure boot, remote firmware updates, etc.
-- Works with any RISC-V processor: no need for proprietary TrustZone-like HW
+- Works with any RISC-V processor: no need for proprietary TrustZone-like hardware
 - Rapid development: pre-integrated TEE, TCP/IP, TLS/ECC, MQTT, FreeRTOS, GCC, Eclipse
-- Built-in Trusted Execution Environment RTOS providing up to 4 separated HW/SW “worlds”
+- Built-in Trusted Execution Environment RTOS providing 4 separated HW/SW “worlds”
 - Commercial open source license: no GPL contamination, no royalties, priced per design
 
-The MultiZone® IoT Firmware works with any 32-bit and 64-bit RISC-V processor with standard U-mode extension. For a quick start, we recommend the development kit based on the open source softcore X300 developed by Hex Five Security. It is an enhanced version of the E300 SoC (Rocket rv32) originally developed at U.C. Berkeley. Like the E300, the X300 is designed to be programmed onto a Xilinx Artix-7. The X300 bitstream is entirely free for commercial and non-commercial use.
+MultiZone® Trusted Firmware works with any 32-bit and 64-bit RISC-V processor with standard U-mode extension. For a quick start, we recommend the development kit based on the open source softcore X300 developed by Hex Five Security. It is an enhanced version of the E300 SoC (Rocket rv32) originally developed at U.C. Berkeley. Like the E300, the X300 is designed to be programmed onto a Xilinx Artix-7. The X300 bitstream is entirely free for commercial and non-commercial use.
 
-This version of the MultiZone Secure IoT Firmware supports the following hardware development kits:
+This version of MultiZone® Trusted Firmware supports the following hardware development kits:
 
 - [Xilinx Artix-7 Arty FPGA Evaluation Kit](https://www.xilinx.com/products/boards-and-kits/arty.html)
 
-- [Microchip PolarFire SoC FPGA Icicle Kit](https://www.microsemi.com/existing-parts/parts/152514) (Coming soon ...)
+- [Microchip PolarFire SoC FPGA Icicle Kit](https://www.microsemi.com/existing-parts/parts/152514)
 
+This repository is for the Digilent ARTY board.
 
 The Arty FPGA Evaluation Kit requires the following open source softcore:
 
