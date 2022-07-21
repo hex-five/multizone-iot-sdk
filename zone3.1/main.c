@@ -164,42 +164,44 @@ void b2_irq_init()  {
 }
 
 // ----------------------------------------------------------------------------
+
 int main (void){
 
 	//while(1) MZONE_WFI();
 	//while(1) MZONE_YIELD();
 	//while(1);
 
-	// vectored trap handler
+    // setup vectored trap handler
 	trap_vect[0] = trp_handler;
 	trap_vect[3] = msi_handler;
 	trap_vect[7] = tmr_handler;
 	trap_vect[BTN0_IRQ] = btn0_handler;
 	trap_vect[BTN1_IRQ] = btn1_handler;
 	trap_vect[BTN2_IRQ] = btn2_handler;
-	CSRW(mtvec, trap_vect);	CSRS(mtvec, 0x1);
+	CSRW(mtvec, trap_vect);
+	CSRS(mtvec, 0x1);
 
-	PWM_REG(PWM_CFG)   = (PWM_CFG_ENALWAYS) | (PWM_CFG_ZEROCMP) | (PWM_CFG_DEGLITCH);
-	PWM_REG(PWM_COUNT) = 0;
+	// setup peripherals
+	PWM_REG(PWM_CFG)   = (PWM_CFG_ENALWAYS | PWM_CFG_ZEROCMP);
 	PWM_REG(PWM_CMP0)  = 0xFE;
 
 	b0_irq_init();
 	b1_irq_init();
 	b2_irq_init();
 
-    // enable msip/inbox interrupt
-    CSRS(mie, 1<<3);
-
-    // set timer & enable interrupt
-	MZONE_ADTIMECMP((uint64_t)25*RTC_FREQ/1000);
+    // set & enable timer
+    MZONE_ADTIMECMP((uint64_t)5*RTC_FREQ/1000);
     CSRS(mie, 1<<7);
 
-    // enable global interrupts (BTN0, BTN1, BTN2, TMR)
+    // enable msip/inbox interrupt
+	CSRS(mie, 1<<3);
+
+	// enable global interrupts
     CSRS(mstatus, 1<<3);
 
 	while(1){
 
-		// Message handler
+        // Asynchronous message handling example
 	    CSRC(mie, 1<<3);
 		for (Zone zone = zone1; zone<=zone4; zone++){
 
@@ -207,12 +209,21 @@ int main (void){
 
 		    if (*msg != '\0') {
 
-				if (strcmp("ping", msg)==0) MZONE_SEND(zone, "pong");
-				else if (strcmp("mie=0", msg)==0) CSRC(mstatus, 1<<3);
-				else if (strcmp("mie=1", msg)==0) CSRS(mstatus, 1<<3);
+				if (strcmp("ping", msg)==0)
+					MZONE_SEND(zone, "pong");
+				
+				/* test: wfi resume with global irq disabled - irqs not taken */	
+				else if (strcmp("mie=0", msg)==0)
+					CSRC(mstatus, 1<<3);
+				
+				/* test: wfi resume with global irq enabled - irqs taken */
+				else if (strcmp("mie=1", msg)==0)
+					CSRS(mstatus, 1<<3);
+				
+				/* test: preemptive scheduler - block for good */
 				else if (strcmp("block", msg)==0) {
-				    CSRC(mstatus, 1<<3);
-				    for(;;);
+				    CSRC(mstatus, 1<<3);  for(;;);
+				
 				}
 
 				*msg = '\0';
@@ -222,7 +233,19 @@ int main (void){
 		}
         CSRS(mie, 1<<3);
 
+		// Wait For Interrupt - irqs taken if mstatus.mie=1
 		MZONE_WFI();
+		
+        // test: wfi resume with global irq disabled - poll inbox
+        if ( (CSRR(mstatus) & 1<<3)==0 ){
+                
+		    for (Zone zone = zone1; zone <= zone4; zone++) {
+		        char msg[16];
+		        if (MZONE_RECV(zone, msg))
+		            memcpy((char*) &inbox[zone-1][0], msg, sizeof inbox[0]);
+    		}
+
+    	}                
 
 	}
 

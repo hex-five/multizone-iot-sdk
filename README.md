@@ -30,9 +30,9 @@ For instructions on how to upload the bitstream to the ARTY board and how to con
 
 Prebuilt fpga bitstreams including the X300 RISC-V SoC and the MultiZone Trusted Firmware are provided as release assets ready to go:
 
-- [multizone-iot-sdk-arty-35t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.1/multizone-iot-sdk-arty-35t.mcs)
+- [multizone-iot-sdk-arty-35t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.4/multizone-iot-sdk-arty-35t.mcs)
 
-- [multizone-iot-sdk-arty-100t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.1/multizone-iot-sdk-arty-100t.mcs)
+- [multizone-iot-sdk-arty-100t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.4/multizone-iot-sdk-arty-100t.mcs)
 
 If you are impatient to run the MultiZone Trusted Firmware demo, just upload the right bitstream to your Arty board and skip all steps below. For this you only need [Xilinx Vivado Lab](https://www.xilinx.com/support/download.html) an the instructions at https://github.com/hex-five/multizone-fpga#readme 
 
@@ -277,7 +277,7 @@ _Note:_ For a complete explanation of the functionality of each zone/application
   solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
   padding:.05in .1in .05in .1in;height:47.65pt'>
   <p><b>Reference Hardware</b></p>
-  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>Digilent ARTY7 35T FPGA</p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>Digilent ARTY7 35T/100T FPGA</p>
   <p style='text-indent:-.25in'>Hex Five X300 SoC IP</p>
   </td>
   <td width=528 valign=top style='width:5.5in;border:none;border-bottom:solid #FFC000 1.0pt;
@@ -323,7 +323,7 @@ _Note:_ For a complete explanation of the functionality of each zone/application
   solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
   padding:.05in .1in .05in .1in;height:50.2pt'>
   <p><b>TCP/IP library</b></p>
-  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>LWIP 2.1.1</p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>LWIP 2.1.3</p>
   <p style='text-indent:-.25in'>Hex Five security extensions</p>
   </td>
   <td width=528 valign=top style='width:5.5in;border:none;border-bottom:solid #FFC000 1.0pt;
@@ -350,7 +350,7 @@ _Note:_ For a complete explanation of the functionality of each zone/application
   solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
   padding:.05in .1in .05in .1in;height:50.2pt'>
   <p><b>SSL library</b></p>
-  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>mbed TLS 2.23.0</p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>mbed TLS 2.28.1</p>
   <p style='text-indent:-.25in'>Hex Five secure configuration</p>
   </td>
   <td width=528 valign=top style='width:5.5in;border:none;border-bottom:solid #FFC000 1.0pt;
@@ -407,7 +407,7 @@ _Note:_ For a complete explanation of the functionality of each zone/application
   solid #FFC000 1.0pt;border-bottom:solid #FFC000 1.0pt;border-right:none;
   padding:.05in .1in .05in .1in;height:50.2pt'>
   <p><b>Trusted Execution Environment</b></p>
-  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>MultiZone Security TEE 2.0</p>
+  <p class=MsoListParagraphCxSpFirst style='text-indent:-.25in'>MultiZone Security TEE 2.2.2</p>
   <p style='text-indent:-.25in'>RISC-V secure DMA extension</p>
   <p style='text-indent:-.25in'>RISC-V shared PLIC extension</p>
   </td>

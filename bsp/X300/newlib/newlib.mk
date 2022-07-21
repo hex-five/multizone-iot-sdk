@@ -30,7 +30,7 @@ CFLAGS += -mabi=$(RISCV_ABI)
 CFLAGS += -mcmodel=medlow
 CFLAGS += -msmall-data-limit=8
 CFLAGS += -ffunction-sections -fdata-sections
-CFLAGS += -Wall -Wextra -Wno-unused-parameter
+CFLAGS += -Wall -Wextra -Wno-unused-parameter -Wno-unused-result
 CFLAGS += -Os -ggdb
 
 HEX = $(subst .elf,.hex,$(TARGET))
