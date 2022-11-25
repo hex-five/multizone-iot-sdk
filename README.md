@@ -30,9 +30,9 @@ For instructions on how to upload the bitstream to the ARTY board and how to con
 
 Prebuilt fpga bitstreams including the X300 RISC-V SoC and the MultiZone Trusted Firmware are provided as release assets ready to go:
 
-- [multizone-iot-sdk-arty-35t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.4/multizone-iot-sdk-arty-35t.mcs)
+- [multizone-iot-sdk-arty-35t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.5/multizone-iot-sdk-arty-35t.mcs)
 
-- [multizone-iot-sdk-arty-100t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.4/multizone-iot-sdk-arty-100t.mcs)
+- [multizone-iot-sdk-arty-100t.mcs](https://github.com/hex-five/multizone-iot-sdk/releases/download/v2.2.5/multizone-iot-sdk-arty-100t.mcs)
 
 If you are impatient to run the MultiZone Trusted Firmware demo, just upload the right bitstream to your Arty board and skip all steps below. For this you only need [Xilinx Vivado Lab](https://www.xilinx.com/support/download.html) an the instructions at https://github.com/hex-five/multizone-fpga#readme 
 
@@ -109,7 +109,7 @@ git apply -p1 ext/freertos.patch --directory=ext/freertos
 ### Build & load the MultiZone IoT firmware ###
 
 Connect the target board to the development workstation as indicated in the user manual.
-'ls multizone-iot-sdk/bsp' shows the list of supported targets: X300, PFSOC.
+'ls multizone-iot-sdk/bsp' shows the list of supported targets: X300.
 Assign one of these values to the BOARD variable - default is X300.
 
 ```
