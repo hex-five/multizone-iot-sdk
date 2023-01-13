@@ -70,7 +70,7 @@ int mbedtls_platform_entropy_poll( void *data, unsigned char *output, size_t len
 #define printf2(format, args...) { /* Multi-part printf() */ \
 	char *str = malloc(64);									 \
 	if (str != NULL){										 \
-		const int len = snprintf(str, 64, format, ## args);	 \
+		const int len = snprintf(str, 64, format, ## args);  \
 		for (int i=0; i<(len/16)+1; i++){					 \
 			while(!MZONE_SEND(2, (str+16*i))) MZONE_YIELD(); \
 		}													 \
@@ -169,11 +169,15 @@ static int msg_handler(const int zone, const char *msg){
     // consumed messages are processed locally and not forwarded to the broker
     int consumed = 0;
 
-    if (strcmp("ping", msg)==0){
+    if (strcmp("ping", msg) == 0) {
         MZONE_SEND(zone, "pong");
         consumed = 1;
 
-    } else if (strcmp("broker hello", msg)==0){
+    } else if (strcmp("restart", msg) == 0) {
+        asm ("j _start");
+        consumed = 1;
+
+    } else if (strcmp("broker hello", msg) == 0) {
         MZONE_SEND(zone, "online");
 
     }
@@ -229,14 +233,16 @@ static void lwip_thread(){
 
 	}
 
-	/* lwIP background tasks ( 250ms, 500ms) */
+	/* run lwIP background tasks ( 250ms, 500ms) */
 	sys_check_timeouts();
 
-	/* set MultiZone timer and go to sleep */
-	const unsigned int sleeptime = sys_timeouts_sleeptime();
-	//printf2(">>> sys_timeouts_sleeptime() %d \n", sleeptime);
-	if (sleeptime != SYS_TIMEOUTS_SLEEPTIME_INFINITE)
-		MZONE_ADTIMECMP( (uint64_t)(sleeptime * RTC_FREQ/1000));
+    /* set MultiZone timer wfi/sleep */
+    const unsigned long sleeptime = sys_timeouts_sleeptime();
+    //printf2("sleeptime %lu \n", sleeptime);
+    if (sleeptime != SYS_TIMEOUTS_SLEEPTIME_INFINITE) {
+        /* sleeptime==0 sleeps forever => add +1 */
+        MZONE_ADTIMECMP( (sleeptime+1) * RTC_FREQ/1000 );
+    }
 
 }
 
