@@ -24,7 +24,7 @@ The Arty FPGA Evaluation Kit requires the following open source softcore:
 
 - [Hex Five X300 RV32ACIMU - Permissive license, free for any use.](https://github.com/hex-five/multizone-fpga)
 
-For instructions on how to upload the bitstream to the ARTY board and how to connect the [Olimex debug head ARM-USB-TINY-H](https://www.olimex.com/Products/ARM/JTAG/ARM-USB-TINY-H/) see [Arty FPGA Dev Kit Getting Started Guide](https://sifive.cdn.prismic.io/sifive%2Fed96de35-065f-474c-a432-9f6a364af9c8_sifive-e310-arty-gettingstarted-v1.0.6.pdf)
+For instructions on how to upload the bitstream to the ARTY board and how to connect the [Olimex debug head ARM-USB-TINY-H](https://www.olimex.com/Products/ARM/JTAG/ARM-USB-TINY-H/) see [Arty FPGA Dev Kit Getting Started Guide](https://sifive.cdn.prismic.io/sifive%2Fed96de35-065f-474c-a432-9f6a364af9c8_sifive-e310-arty-gettingstarted-v1.0.6.pdf) and [connecting the FPGA to a JTAG debugger](https://hex-five.com/wp-content/uploads/ARTY-JTAG.png)
 
 ### Quick Start ###
 
