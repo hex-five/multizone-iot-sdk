@@ -1,22 +1,37 @@
-mosquitto_sub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/+
+-------------------------------------------------------------------------------
+TERMINAL 1
+-------------------------------------------------------------------------------
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone1 -m ping
+CLIENT_ID=mzone-xxxxxxxx
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone3 -f zone3.1/zone3.bin
+alias mqtt_sub='mosquitto_sub --host mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key'
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone3 -m ping
+mqtt_sub -t $CLIENT_ID/# -v
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -f zone4.1/zone4.bin
+-------------------------------------------------------------------------------
+TERMINAL 2
+-------------------------------------------------------------------------------
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m unfold
+CLIENT_ID=mzone-xxxxxxxx
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m start
+alias mqtt_pub='mosquitto_pub --host mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key'
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m stop
+mqtt_pub -t $CLIENT_ID/zone1 -m ping
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m t
+mqtt_pub -t $CLIENT_ID/zone3 -f zone3.1/zone3.bin
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m g
+mqtt_pub -t $CLIENT_ID/zone3 -m ping
 
-mosquitto_pub -h mqtt-broker.hex-five.com --cafile pki/hexfive-ca.crt --cert pki/test.crt --key pki/test.key -t mzone-5e7d90f7/zone4 -m fold
+mqtt_pub -t $CLIENT_ID/zone4 -f zone4.1/zone4.bin
 
+mqtt_pub -t $CLIENT_ID/zone4 -m unfold
+
+mqtt_pub -t $CLIENT_ID/zone4 -m start
+
+mqtt_pub -t $CLIENT_ID/zone4 -m stop
+
+mqtt_pub -t $CLIENT_ID/zone4 -m t
+
+mqtt_pub -t $CLIENT_ID/zone4 -m g
+
+mqtt_pub -t $CLIENT_ID/zone4 -m fold
