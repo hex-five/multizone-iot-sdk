@@ -21,8 +21,7 @@ typedef enum {zone1=1, zone2, zone3, zone4} Zone;
 static volatile char inbox[4][16] = { {'\0'}, {'\0'}, {'\0'}, {'\0'} };
 
 // ----------------------------------------------------------------------------
-static void (*trap_vect[__riscv_xlen])(void) = {};
-__attribute__((interrupt())) void trp_handler(void)	 { // trap handler (0)
+__attribute__((interrupt())) void trp_isr(void)	 { // trap handler (0)
 
 	asm volatile("ebreak");
 
@@ -40,7 +39,7 @@ __attribute__((interrupt())) void trp_handler(void)	 { // trap handler (0)
 	}*/
 
 }
-__attribute__((interrupt())) void msi_handler(void)  { // machine software interrupt (3)
+__attribute__((interrupt())) void msi_isr(void)  { // machine software interrupt (3)
 
     for (Zone zone = zone1; zone <= zone4; zone++) {
         char msg[16];
@@ -49,7 +48,7 @@ __attribute__((interrupt())) void msi_handler(void)  { // machine software inter
     }
 
 }
-__attribute__((interrupt())) void tmr_handler(void)  { // machine timer interrupt (7)
+__attribute__((interrupt())) void tmr_isr(void)  { // machine timer interrupt (7)
 
 	static uint16_t r=0x3F;
 	static uint16_t g=0;
@@ -67,7 +66,7 @@ __attribute__((interrupt())) void tmr_handler(void)  { // machine timer interrup
 	MZONE_ADTIMECMP((uint64_t)25*RTC_FREQ/1000);
 
 }
-__attribute__((interrupt())) void btn0_handler(void) {
+__attribute__((interrupt())) void btn0_isr(void) {
 
 	static uint64_t debounce = 0;
 	const uint64_t T = MZONE_RDTIME();
@@ -81,7 +80,7 @@ __attribute__((interrupt())) void btn0_handler(void) {
 	GPIO_REG(GPIO_HIGH_IP) |= (1<<BTN0); //clear gpio irq
 
 }
-__attribute__((interrupt())) void btn1_handler(void) {
+__attribute__((interrupt())) void btn1_isr(void) {
 
 	static uint64_t debounce = 0;
 	const uint64_t T = MZONE_RDTIME();
@@ -95,7 +94,7 @@ __attribute__((interrupt())) void btn1_handler(void) {
 	GPIO_REG(GPIO_HIGH_IP) |= (1<<BTN1); //clear gpio irq
 
 }
-__attribute__((interrupt())) void btn2_handler(void) {
+__attribute__((interrupt())) void btn2_isr(void) {
 
 	static uint64_t debounce = 0;
 	const uint64_t T = MZONE_RDTIME();
@@ -170,16 +169,6 @@ int main (void){
 	//while(1) MZONE_WFI();
 	//while(1) MZONE_YIELD();
 	//while(1);
-
-    // setup vectored trap handler
-	trap_vect[0] = trp_handler;
-	trap_vect[3] = msi_handler;
-	trap_vect[7] = tmr_handler;
-	trap_vect[BTN0_IRQ] = btn0_handler;
-	trap_vect[BTN1_IRQ] = btn1_handler;
-	trap_vect[BTN2_IRQ] = btn2_handler;
-	CSRW(mtvec, trap_vect);
-	CSRS(mtvec, 0x1);
 
 	// setup peripherals
 	PWM_REG(PWM_CFG)   = (PWM_CFG_ENALWAYS | PWM_CFG_ZEROCMP);

@@ -31,7 +31,7 @@ int inbox_empty(void){
 	return (inbox[0][0]=='\0' && inbox[1][0]=='\0' && inbox[2][0]=='\0' && inbox[3][0]=='\0');
 }
 
-__attribute__(( interrupt())) void trap_handler(void){
+__attribute__(( interrupt())) void trp_isr(void){
 
 	const unsigned long mcause = MZONE_CSRR(CSR_MCAUSE);
 	const unsigned long mepc   = MZONE_CSRR(CSR_MEPC);
@@ -640,8 +640,8 @@ int main (void) {
 	//while(1) MZONE_YIELD();
 	//while(1);
     
-    // setup trap handler    
-    CSRW(mtvec, trap_handler);  // register trap handler
+    // set trap mode "direct"
+    CSRC(mtvec, 1);
 
     // enable interrupt sources
 	CSRS(mie, 1<<3);
@@ -650,7 +650,7 @@ int main (void) {
 	// Enable PLIC source Priority 2, 1=lowest 7=highest)
 	CSRS(mie, 1<<11);
 	PLIC_REG(PLIC_PRI + (PLIC_SRC_UART << PLIC_SHIFT_PER_SRC)) = 2;
-	PLIC_REG(PLIC_EN) |= 1 << PLIC_SRC_UART;
+	PLIC_REG(PLIC_EN + 4*(PLIC_SRC_UART/32)) |= 1 << (PLIC_SRC_UART%32);
 
 	// enable global interrupt
     CSRS(mstatus, 1<<3);

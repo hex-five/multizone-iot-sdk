@@ -85,8 +85,7 @@ static volatile char inbox[4][16] = { {'\0'}, {'\0'}, {'\0'}, {'\0'} };
 typedef enum {zone1=1, zone2, zone3, zone4} Zone;
 
 // ----------------------------------------------------------------------------
-static void (*trap_vect[__riscv_xlen])(void) = {};
-__attribute__((interrupt())) void trp_handler(void)  { // non maskable traps
+__attribute__((interrupt())) void trp_isr(void)  { // non maskable traps
 
 /*  const unsigned long mcause = MZONE_CSRR(CSR_MCAUSE);
 	const unsigned long mepc   = MZONE_CSRR(CSR_MEPC);
@@ -134,7 +133,7 @@ __attribute__((interrupt())) void trp_handler(void)  { // non maskable traps
 	for( ;; );
 
 }
-__attribute__((interrupt())) void msi_handler(void)  { // machine software interrupt (3)
+__attribute__((interrupt())) void msi_isr(void)  { // machine software interrupt (3)
 
     for (Zone zone = zone1; zone <= zone4; zone++) {
         char msg[16];
@@ -143,10 +142,10 @@ __attribute__((interrupt())) void msi_handler(void)  { // machine software inter
     }
 
 }
-__attribute__((interrupt())) void tmr_handler(void)  { // machine timer interrupt (7)
+__attribute__((interrupt())) void tmr_isr(void)  { // machine timer interrupt (7)
 	 MZONE_WRTIMECMP((uint64_t)-1); // clear mip.7
 }
-__attribute__((interrupt())) void plic_handler(void) { // machine external interrupt (11)
+__attribute__((interrupt())) void plic_isr(void) { // machine external interrupt (11)
 
 	const uint32_t plic_int = PLIC_REG(PLIC_CLAIM); // PLIC claim
 
@@ -253,13 +252,6 @@ int main(void) {
 	//while(1) MZONE_YIELD();
 	//while(1);
 
-	// setup vectored trap handler
-	trap_vect[0]  = trp_handler;
-	trap_vect[3]  = msi_handler;
-	trap_vect[7]  = tmr_handler;
-	trap_vect[11] = plic_handler;
-	CSRW(mtvec, trap_vect);	CSRS(mtvec, 0x1);
-
 	// enable msip/inbox interrupt
     CSRS(mie, 1<<3);
 
@@ -269,7 +261,7 @@ int main(void) {
 	// enable XEMACLITE RX IRQ (PLIC Priority 1=lowest 7=highest)
     CSRS(mie, 1<<11);       // enable external interrupts (PLIC/XEMAC)
 	PLIC_REG(PLIC_PRI + (PLIC_SRC_XEMAC << PLIC_SHIFT_PER_SRC)) = 1;
-	PLIC_REG(PLIC_EN) |= 1 << PLIC_SRC_XEMAC;
+	PLIC_REG(PLIC_EN + 4*(PLIC_SRC_XEMAC/32)) |= 1 << (PLIC_SRC_XEMAC%32);
 
 	// enable global interrupt
     CSRS(mstatus, 1<<3);

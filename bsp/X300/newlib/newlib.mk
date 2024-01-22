@@ -7,6 +7,7 @@ ASM_SRCS += $(NEWLIB_DIR)/crt0.S
 C_SRCS += $(NEWLIB_DIR)/newlib.c
 C_SRCS += $(PLATFORM_DIR)/xemaclite.c
 
+INCLUDES += -I$(NEWLIB_DIR)
 INCLUDES += -I$(PLATFORM_DIR)
 
 LDFLAGS += -T $(PLATFORM_DIR)/memory.lds
